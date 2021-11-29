@@ -16,21 +16,21 @@ Copyright: <wolfSSL Inc.>
 Comment:   <>
 
 Name: 	   <Falcon>
-Version:   <pqm4>
+Version:   <PQClean>
 URL:	   <https://github.com/PQClean/PQClean/tree/master/crypto_sign/falcon-512/clean>
 License:   <MIT license>
 Copyright: <Falcon Project>		
 Comment:   <>
 
 Name: 	   <CRYSTALS-Kyber>
-Version:   <pqm4>
+Version:   <PQClean>
 URL:	   <https://github.com/PQClean/PQClean/tree/master/crypto_kem/kyber512/clean>
 License:   <Public Domain>
 Copyright: <None (public domain)>		
 Comment:   <>
 
 Name: 	   <CRYSTALS-Dilithium>
-Version:   <pqm4>
+Version:   <PQClean>
 URL:	   <https://github.com/PQClean/PQClean/tree/master/crypto_sign/dilithium2/clean>
 License:   <Public Domain>
 Copyright: <None (public domain)>		
