@@ -1,0 +1,31 @@
+# vim:ft=automake
+# included from Top Level Makefile.am
+# All paths should be given relative to the root
+
+
+if BUILD_EXAMPLE_CLIENTS
+noinst_PROGRAMS += examples/echoclient/echoclient
+noinst_HEADERS += examples/echoclient/echoclient.h
+examples_echoclient_echoclient_SOURCES      = examples/echoclient/echoclient.c wolfcrypt/postquantum/common/randombytes.c wolfcrypt/postquantum/common/fips202.c
+examples_echoclient_echoclient_LDADD        = src/libwolfssl.la $(LIB_STATIC_ADD) \
+									wolfcrypt/postquantum/kyber/kyber512/libkyber512_clean.la \
+									wolfcrypt/postquantum/kyber/kyber768/libkyber768_clean.la \
+									wolfcrypt/postquantum/kyber/kyber1024/libkyber1024_clean.la \
+									wolfcrypt/postquantum/saber/lightsaber/liblightsaber_clean.la \
+									wolfcrypt/postquantum/saber/saber_/libsaber_clean.la \
+									wolfcrypt/postquantum/saber/firesaber/libfiresaber_clean.la \
+									wolfcrypt/postquantum/dilithium/dilithium2/libdilithium2_clean.la \
+									wolfcrypt/postquantum/dilithium/dilithium3/libdilithium3_clean.la \
+									wolfcrypt/postquantum/dilithium/dilithium5/libdilithium5_clean.la \
+									wolfcrypt/postquantum/falcon/falcon512/libfalcon-512_clean.la \
+									wolfcrypt/postquantum/falcon/falcon1024/libfalcon-1024_clean.la
+examples_echoclient_echoclient_DEPENDENCIES = src/libwolfssl.la 
+endif
+EXTRA_DIST += examples/echoclient/echoclient.sln
+EXTRA_DIST += examples/echoclient/echoclient-ntru.vcproj
+EXTRA_DIST += examples/echoclient/echoclient.vcproj
+EXTRA_DIST += examples/echoclient/echoclient.vcxproj
+
+dist_example_DATA+= examples/echoclient/echoclient.c
+DISTCLEANFILES+= examples/echoclient/.libs/echoclient
+

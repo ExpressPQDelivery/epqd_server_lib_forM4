@@ -1,0 +1,37 @@
+# vim:ft=automake
+# included from Top Level Makefile.am
+# All paths should be given relative to the root
+
+
+if BUILD_TESTS
+check_PROGRAMS += testsuite/testsuite.test
+noinst_PROGRAMS += testsuite/testsuite.test
+testsuite_testsuite_test_SOURCES = \
+			      wolfcrypt/test/test.c \
+			      examples/client/client.c \
+			      examples/echoclient/echoclient.c \
+			      examples/echoserver/echoserver.c \
+			      examples/server/server.c \
+			      testsuite/testsuite.c wolfcrypt/postquantum/common/randombytes.c wolfcrypt/postquantum/common/fips202.c
+testsuite_testsuite_test_CFLAGS       = -DNO_MAIN_DRIVER $(AM_CFLAGS)
+testsuite_testsuite_test_LDADD        = src/libwolfssl.la $(LIB_STATIC_ADD) \
+									wolfcrypt/postquantum/kyber/kyber512/libkyber512_clean.la \
+									wolfcrypt/postquantum/kyber/kyber768/libkyber768_clean.la \
+									wolfcrypt/postquantum/kyber/kyber1024/libkyber1024_clean.la \
+									wolfcrypt/postquantum/saber/lightsaber/liblightsaber_clean.la \
+									wolfcrypt/postquantum/saber/saber_/libsaber_clean.la \
+									wolfcrypt/postquantum/saber/firesaber/libfiresaber_clean.la \
+									wolfcrypt/postquantum/dilithium/dilithium2/libdilithium2_clean.la \
+									wolfcrypt/postquantum/dilithium/dilithium3/libdilithium3_clean.la \
+									wolfcrypt/postquantum/dilithium/dilithium5/libdilithium5_clean.la \
+									wolfcrypt/postquantum/falcon/falcon512/libfalcon-512_clean.la \
+									wolfcrypt/postquantum/falcon/falcon1024/libfalcon-1024_clean.la
+testsuite_testsuite_test_DEPENDENCIES = src/libwolfssl.la
+endif
+EXTRA_DIST += testsuite/testsuite.sln
+EXTRA_DIST += testsuite/testsuite-ntru.vcproj
+EXTRA_DIST += testsuite/testsuite.vcproj
+EXTRA_DIST += testsuite/testsuite.vcxproj
+EXTRA_DIST += input
+EXTRA_DIST += quit
+DISTCLEANFILES+= testsuite/.libs/testsuite.test

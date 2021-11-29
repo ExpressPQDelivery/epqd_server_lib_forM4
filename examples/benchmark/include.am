@@ -1,0 +1,37 @@
+# vim:ft=automake
+# included from Top Level Makefile.am
+# All paths should be given relative to the root
+
+
+if BUILD_THREADED_EXAMPLES
+noinst_PROGRAMS += examples/benchmark/tls_bench
+noinst_HEADERS += examples/benchmark/tls_bench.h 
+examples_benchmark_tls_bench_SOURCES      = examples/benchmark/tls_bench.c wolfcrypt/postquantum/common/randombytes.c wolfcrypt/postquantum/common/fips202.c
+
+examples_benchmark_tls_bench_LDADD        = src/libwolfssl.la $(LIB_STATIC_ADD) \
+									wolfcrypt/postquantum/kyber/kyber512/libkyber512_clean.la \
+									wolfcrypt/postquantum/kyber/kyber768/libkyber768_clean.la \
+									wolfcrypt/postquantum/kyber/kyber1024/libkyber1024_clean.la \
+									wolfcrypt/postquantum/saber/lightsaber/liblightsaber_clean.la \
+									wolfcrypt/postquantum/saber/saber_/libsaber_clean.la \
+									wolfcrypt/postquantum/saber/firesaber/libfiresaber_clean.la \
+									wolfcrypt/postquantum/dilithium/dilithium2/libdilithium2_clean.la \
+									wolfcrypt/postquantum/dilithium/dilithium3/libdilithium3_clean.la \
+									wolfcrypt/postquantum/dilithium/dilithium5/libdilithium5_clean.la \
+									wolfcrypt/postquantum/falcon/falcon512/libfalcon-512_clean.la \
+									wolfcrypt/postquantum/falcon/falcon1024/libfalcon-1024_clean.la
+
+examples_benchmark_tls_bench_DEPENDENCIES = src/libwolfssl.la \
+									#wolfcrypt/postquantum/kyber512/libkyber512_clean.la \
+									#wolfcrypt/postquantum/kyber768/libkyber768_clean.la \
+									#wolfcrypt/postquantum/kyber1024/libkyber1024_clean.la \
+									#wolfcrypt/postquantum/lightsaber/liblightsaber_clean.la \
+									#wolfcrypt/postquantum/saber/libsaber_clean.la \
+									#wolfcrypt/postquantum/firesaber/libfiresaber_clean.la \
+									#wolfcrypt/postquantum/dilithium2/libdilithium2_clean.la \
+									#wolfcrypt/postquantum/dilithium3/libdilithium3_clean.la \
+									#wolfcrypt/postquantum/dilithium5/libdilithium5_clean.la 
+endif
+
+dist_example_DATA+= examples/benchmark/tls_bench.c
+DISTCLEANFILES+= examples/benchmark/.libs/tls_bench

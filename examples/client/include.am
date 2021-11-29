@@ -1,0 +1,28 @@
+# vim:ft=automake
+# All paths should be given relative to the root
+
+if BUILD_EXAMPLE_CLIENTS
+noinst_PROGRAMS += examples/client/client
+noinst_HEADERS += examples/client/client.h
+examples_client_client_SOURCES      = examples/client/client.c wolfcrypt/postquantum/common/randombytes.c wolfcrypt/postquantum/common/fips202.c
+examples_client_client_LDADD        = src/libwolfssl.la $(LIB_STATIC_ADD) \
+									wolfcrypt/postquantum/kyber/kyber512/libkyber512_clean.la \
+									wolfcrypt/postquantum/kyber/kyber768/libkyber768_clean.la \
+									wolfcrypt/postquantum/kyber/kyber1024/libkyber1024_clean.la \
+									wolfcrypt/postquantum/saber/lightsaber/liblightsaber_clean.la \
+									wolfcrypt/postquantum/saber/saber_/libsaber_clean.la \
+									wolfcrypt/postquantum/saber/firesaber/libfiresaber_clean.la \
+									wolfcrypt/postquantum/dilithium/dilithium2/libdilithium2_clean.la \
+									wolfcrypt/postquantum/dilithium/dilithium3/libdilithium3_clean.la \
+									wolfcrypt/postquantum/dilithium/dilithium5/libdilithium5_clean.la \
+									wolfcrypt/postquantum/falcon/falcon512/libfalcon-512_clean.la \
+									wolfcrypt/postquantum/falcon/falcon1024/libfalcon-1024_clean.la
+examples_client_client_DEPENDENCIES = src/libwolfssl.la 
+endif
+EXTRA_DIST += examples/client/client.sln
+EXTRA_DIST += examples/client/client-ntru.vcproj
+EXTRA_DIST += examples/client/client.vcproj
+EXTRA_DIST += examples/client/client.vcxproj
+
+dist_example_DATA+= examples/client/client.c
+DISTCLEANFILES+= examples/client/.libs/client

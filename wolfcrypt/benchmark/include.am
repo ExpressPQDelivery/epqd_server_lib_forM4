@@ -1,0 +1,30 @@
+# vim:ft=automake
+# All paths should be given relative to the root
+
+if BUILD_WOLFCRYPT_TESTS
+if !BUILD_LINUXKM
+
+noinst_PROGRAMS += wolfcrypt/benchmark/benchmark
+wolfcrypt_benchmark_benchmark_SOURCES      = wolfcrypt/benchmark/benchmark.c wolfcrypt/postquantum/common/randombytes.c wolfcrypt/postquantum/common/fips202.c
+wolfcrypt_benchmark_benchmark_LDADD        = src/libwolfssl.la $(LIB_STATIC_ADD) \
+									wolfcrypt/postquantum/kyber/kyber512/libkyber512_clean.la \
+									wolfcrypt/postquantum/kyber/kyber768/libkyber768_clean.la \
+									wolfcrypt/postquantum/kyber/kyber1024/libkyber1024_clean.la \
+									wolfcrypt/postquantum/saber/lightsaber/liblightsaber_clean.la \
+									wolfcrypt/postquantum/saber/saber_/libsaber_clean.la \
+									wolfcrypt/postquantum/saber/firesaber/libfiresaber_clean.la \
+									wolfcrypt/postquantum/dilithium/dilithium2/libdilithium2_clean.la \
+									wolfcrypt/postquantum/dilithium/dilithium3/libdilithium3_clean.la \
+									wolfcrypt/postquantum/dilithium/dilithium5/libdilithium5_clean.la \
+									wolfcrypt/postquantum/falcon/falcon512/libfalcon-512_clean.la \
+									wolfcrypt/postquantum/falcon/falcon1024/libfalcon-1024_clean.la
+wolfcrypt_benchmark_benchmark_DEPENDENCIES = src/libwolfssl.la 
+noinst_HEADERS += wolfcrypt/benchmark/benchmark.h
+
+endif
+endif
+
+EXTRA_DIST += wolfcrypt/benchmark/benchmark.sln
+EXTRA_DIST += wolfcrypt/benchmark/benchmark.vcproj
+EXTRA_DIST += wolfcrypt/benchmark/README.md
+DISTCLEANFILES+= wolfcrypt/benchmark/.libs/benchmark
