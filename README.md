@@ -1,9 +1,9 @@
 # WolfSSL 4.7.0 with Postquantum Algorithms for PC
 
 ## Description
-This is a tweeked version of WolfSSL that enables the use of Postquantum algorithms in TLS 1.3 key exchange and authentication methods, designed to run on PC's. The wolfSSL version that we are using is 4.7.0 from [here](https://github.com/wolfSSL/wolfssl/releases/tag/v4.7.0-stable) and the postquantum algorithms are from [PQClean](https://github.com/PQClean/PQClean). The postquantum algorithms that are supported are:
+This is a tweeked version of WolfSSL that enables the use of Postquantum algorithms in TLS 1.3 key exchange and authentication methods, designed to run on PC's. The version we are using is [WolfSSL 4.7.0](https://github.com/wolfSSL/wolfssl/releases/tag/v4.7.0-stable) and the postquantum algorithms are from [PQClean](https://github.com/PQClean/PQClean). The postquantum algorithms that are supported are:
 
-- [x]  Kyber
+- [x] Kyber
 
 - [x] Saber
 
@@ -56,7 +56,7 @@ autogen.sh will take care of everything your systems needs for the installation 
 ```
 ./configure --enable-tls13 --disable-tlsv12 --disable-oldtls --disable-shared --disable-static
 ```
-(Only for debug purposes you should pass the `--enable-debug` option too)
+(For debug purposes you should pass the `--enable-debug` option too)
 
 5. Before we build the project we must edit the `config.h` file and add these lines on the top:
 ```
@@ -152,7 +152,7 @@ ERROR: failed to connect
 Client Error: -1 (unknown error number)
 ```
 
-try re-running the benchmark OR try debugging it with an IDE.
+try re-running the benchmark OR try debugging it with an IDE, if `--enable-debug` flag is passed.
 
 ## Usage
 
@@ -164,11 +164,11 @@ To use this project to connect to a remote board (i.e a Nucleo Board) you should
 ./examples/benchmark/tls_bench -sv
 ```
 
-2. Get the internal IP if it's a local network or the external IP if it's connected to the Internet and run the client from the board targeting that IP. (link to the Gitlab repo of Nucleo Project).
+2. Get the internal IP if it's a local network or the external IP if it's connected to the Internet and use this [project](https://gitlab.com/g_tasop/pq-wolfssl-for-embedded) to setup and run the client from the board targeting that IP 
 
 OR
 
-1. Set up a server to run on the remote machine and get its IP. For example, the IP of the remote machine is "192.168.1.14".
+1. Set up a server to run on the remote machine and get its IP. For example, the IP of the remote machine could be "192.168.1.14".
 
 4. Run the client with the IP as an argument:
 
@@ -202,19 +202,20 @@ To override them and use your own preferances you have to:
 
 #### Key exchange
 
-1. Edit file `src/tls.c` in line ~10711 (Approximately on the same line on the WolfSSL code for the board) to look like this:
+1. Edit file `src/tls.c` in line ~10791 to force the Key Exchange algorithm of your preference:
 
 ```
 ...
-/* Edit the next line with your preffered group! */
-namedGroup = WOLFSSL_FFDHE_2048;
-
-ret = TLSX_KeyShare_Use(ssl, namedGroup, 0, NULL, NULL);
+#ifndef HAVE_POSTQUANTUM
+				// Force curve SECP256R1 (or any other group) for benchmarking purposes
+            	namedGroup = WOLFSSL_ECC_SECP256R1;
+#endif
+                ret = TLSX_KeyShare_Use(ssl, namedGroup, 0, NULL, NULL);
 ...
 
 ```
 
-The available key exchange algorithms (groups) can be found on the `preferredGroup[]` array just above the function `TLSX_PopulateExtensions`, on line ~10452.
+The available key exchange algorithms (groups) can be found on the `preferredGroup[]` array just above the function `TLSX_PopulateExtensions`, on line ~10532.
 
 
 #### Authentication method
@@ -225,11 +226,11 @@ To do this we have to do the following:
 
 1. Edit the file `/examples/benchmark/tls_bench.c` and go to the point where the client and the server loads the certificates.
 
-- This for the server is on function `bench_tls_server` at line ~1327 and ~1344 for the certificate and the private key respectivly.
+- This, for the server, is in function `bench_tls_server` at line ~1317 and ~1333 for the certificate and the private key respectivly.
 
-- For the client this is on function `bench_tls_client` at line ~878.
+- For the client, this is in function `bench_tls_client` at line ~867.
 
-For example, lines 877-891 could look like this:
+For example, lines 866-880 could look like this:
 
 ```
 #ifdef HAVE_ECC
