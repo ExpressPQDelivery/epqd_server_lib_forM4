@@ -70,10 +70,15 @@ autogen.sh will take care of everything your systems needs for the installation 
 //		#define HAVE_SABER      // method
 /* -----------------------------------------------------*/
 ```
-6. Now we are ready build the whole project:
+6. Now we are ready to build the whole project:
 
 ```
 make
+```
+** **NOTICE:** ** there is a problem with newer distibutions (i.e Ubuntu 21.10) that use gcc-11 by default. Fallback to a previous version, i.e gcc-10, by running:
+
+```
+make CC=gcc-10
 ```
 
 Optionally we can install the library on the system for using PQ WolfSSL on programs with a simple library call (-lwolfssl).
