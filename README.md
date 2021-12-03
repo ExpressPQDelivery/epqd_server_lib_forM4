@@ -18,7 +18,7 @@ This version is targeting theoretically any Linux system and it requires: `autoc
 Install the requirements:
 ```
 sudo apt update
-sudo apt install autoconf autotools-dev automake libtool
+sudo apt install make autoconf autotools-dev automake libtool git
 ```
 
 The only thing on this project that is system specific is the **PQClean crypto libraries**. 
@@ -45,7 +45,7 @@ git clone https://github.com/PQClean/PQClean.git
 3. Cd in the clone repository and run the auto generation script:
 
 ```
-cd wolfssl-pq-for-pc
+cd pq-wolfssl-for-pc
 ./autogen.sh
 ```
 
