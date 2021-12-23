@@ -10,7 +10,7 @@
 
 #include "kyber_security.h"
 
-#if KYBER_SECURITY_LEVEL==2
+#if KYBER_SECURITY_LEVEL==1
 	#include "wolfcrypt/postquantum/kyber/kyber512/api.h"
 #elif KYBER_SECURITY_LEVEL==3
 	#include "wolfcrypt/postquantum/kyber/kyber768/api.h"

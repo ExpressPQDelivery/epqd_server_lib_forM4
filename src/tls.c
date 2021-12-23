@@ -10332,13 +10332,13 @@ static int TLSX_PopulateSupportedGroups(WOLFSSL* ssl, TLSX** extensions)
 #ifdef HAVE_POSTQUANTUM
 
 	#ifdef HAVE_KYBER
-		#if KYBER_SECURITY_LEVEL==2
+		#if KYBER_SECURITY_LEVEL==1
 			ret = TLSX_UseSupportedCurve(extensions, WOLFSSL_KYBER_LEVEL1, ssl->heap);
 			if (ret != WOLFSSL_SUCCESS) return ret;
 		#elif KYBER_SECURITY_LEVEL==3
 			ret = TLSX_UseSupportedCurve(extensions, WOLFSSL_KYBER_LEVEL3, ssl->heap);
 			if (ret != WOLFSSL_SUCCESS) return ret;
-		#elif KYBER_SECURITY_LEVEL==4
+		#elif KYBER_SECURITY_LEVEL==5
 			ret = TLSX_UseSupportedCurve(extensions, WOLFSSL_KYBER_LEVEL5, ssl->heap);
 			if (ret != WOLFSSL_SUCCESS) return ret;
 		#endif /* KYBER_SECURITY_LEVEL */
@@ -10767,11 +10767,11 @@ int TLSX_PopulateExtensions(WOLFSSL* ssl, byte isServer)
 
             	#ifdef HAVE_POSTQUANTUM
             		#ifdef HAVE_KYBER
-            			#if (KYBER_SECURITY_LEVEL == 2)
+            			#if (KYBER_SECURITY_LEVEL == 1)
             				namedGroup = WOLFSSL_KYBER_LEVEL1;
             			#elif (KYBER_SECURITY_LEVEL == 3)
             				namedGroup = WOLFSSL_KYBER_LEVEL3;
-            			#else /* KYBER_SECURITY_LEVEL == 4 */
+            			#else /* KYBER_SECURITY_LEVEL == 5 */
             				namedGroup = WOLFSSL_KYBER_LEVEL5;
             			#endif
             		#endif /* HAVE_KYBER */

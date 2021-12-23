@@ -10,7 +10,7 @@
 
 
 /* ----------------------------------------------------------------*/
-	#define DILITHIUM_SECURITY_LEVEL 2 		//	choose 				|
+	#define DILITHIUM_SECURITY_LEVEL 1 		//	choose 				|
 //	#define DILITHIUM_SECURITY_LEVEL 3		//	security			|
 //	#define DILITHIUM_SECURITY_LEVEL 5		//	level				|
 /*-----------------------------------------------------------------*/

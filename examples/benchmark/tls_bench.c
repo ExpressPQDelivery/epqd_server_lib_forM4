@@ -1856,11 +1856,11 @@ int bench_tls(void* args)
 
 #ifdef HAVE_POSTQUANTUM
 	#ifdef KYBER_SECURITY_LEVEL
-		#if KYBER_SECURITY_LEVEL==2
+		#if KYBER_SECURITY_LEVEL==1
 				printf("TLS key exchange method: \t\t%s\n", PQCLEAN_KYBER512_CLEAN_CRYPTO_ALGNAME);
 		#elif KYBER_SECURITY_LEVEL==3
 				printf("TLS key exchange method: \t\t%s\n", PQCLEAN_KYBER768_CLEAN_CRYPTO_ALGNAME);
-		#elif KYBER_SECURITY_LEVEL==4
+		#elif KYBER_SECURITY_LEVEL==5
 				printf("TLS key exchange method: \t\t%s\n", PQCLEAN_KYBER1024_CLEAN_CRYPTO_ALGNAME);
 		#endif /* KYBER_SECURITY_LEVEL */
 	#endif
@@ -1877,7 +1877,7 @@ int bench_tls(void* args)
 
 
 	#ifdef DILITHIUM_SECURITY_LEVEL
-		#if DILITHIUM_SECURITY_LEVEL==2
+		#if DILITHIUM_SECURITY_LEVEL==1
 				printf("TLS authentication method: \t\t%s\n\n", PQCLEAN_DILITHIUM2_CLEAN_CRYPTO_ALGNAME);
 		#elif DILITHIUM_SECURITY_LEVEL==3
 				printf("TLS authentication method: \t\t%s\n\n", PQCLEAN_DILITHIUM3_CLEAN_CRYPTO_ALGNAME);
@@ -1887,9 +1887,9 @@ int bench_tls(void* args)
 	#endif
 
 	#ifdef FALCON_SECURITY_LEVEL
-		#if FALCON_SECURITY_LEVEL==2
+		#if FALCON_SECURITY_LEVEL==1
 				printf("TLS authentication method: \t\t%s\n\n", PQCLEAN_FALCON512_CLEAN_CRYPTO_ALGNAME);
-		#elif FALCON_SECURITY_LEVEL==3
+		#elif FALCON_SECURITY_LEVEL==5
 				printf("TLS authentication method: \t\t%s\n\n", PQCLEAN_FALCON1024_CLEAN_CRYPTO_ALGNAME);
 		#endif /* FALCON_SECURITY_LEVEL */
 	#endif

@@ -9,9 +9,9 @@
 #define WOLFCRYPT_POSTQUANTUM_KYBER_KYBER_SECURITY_H_
 
 /* ------------------------------------------------------------*/
-	#define KYBER_SECURITY_LEVEL 2 		//	choose				|
+	#define KYBER_SECURITY_LEVEL 1 		//	choose				|
 //	#define KYBER_SECURITY_LEVEL 3		//	security			|
-//	#define KYBER_SECURITY_LEVEL 4		//	level				|
+//	#define KYBER_SECURITY_LEVEL 5		//	level				|
 /*-------------------------------------------------------------*/
 
 #endif /* WOLFCRYPT_POSTQUANTUM_KYBER_KYBER_SECURITY_H_ */

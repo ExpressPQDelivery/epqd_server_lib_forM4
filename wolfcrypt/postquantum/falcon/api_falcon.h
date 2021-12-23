@@ -10,7 +10,7 @@
 
 #include "falcon_security.h"
 
-#if FALCON_SECURITY_LEVEL==2
+#if FALCON_SECURITY_LEVEL==1
 	#include "wolfcrypt/postquantum/falcon/falcon512/api.h"
 #else
 	#include "wolfcrypt/postquantum/falcon/falcon1024/api.h"

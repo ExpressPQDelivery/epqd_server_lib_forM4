@@ -10,7 +10,7 @@
 
 #include "dilithium_security.h"
 
-#if DILITHIUM_SECURITY_LEVEL==2
+#if DILITHIUM_SECURITY_LEVEL==1
 	#include "wolfcrypt/postquantum/dilithium/dilithium2/api.h"
 #elif DILITHIUM_SECURITY_LEVEL==3
 	#include "wolfcrypt/postquantum/dilithium/dilithium3/api.h"
