@@ -5291,10 +5291,6 @@ static int SendTls13CertificateVerify(WOLFSSL* ssl)
     int ret = 0;
     buffer* sig = &ssl->buffers.sig;
 
-#ifdef HAVE_POSTQUANTUM
-    byte* 	pubK;
-#endif /* HAVE_POSTQUANTUM */
-
 #ifdef WOLFSSL_ASYNC_CRYPT
     Scv13Args* args = (Scv13Args*)ssl->async.args;
     typedef char args_test[sizeof(ssl->async.args) >= sizeof(*args) ? 1 : -1];
@@ -5367,9 +5363,6 @@ static int SendTls13CertificateVerify(WOLFSSL* ssl)
                     ERROR_OUT(NO_PRIVATE_KEY, exit_scv);
             }
             else {
-#ifdef HAVE_POSTQUANTUM
-            	pubK = ssl->buffers.key->buffer + (4+CRYPTO_SECRETKEYBYTES);	// PQ Public Key
-#endif /* HAVE_POSTQUANTUM */
                 ret = DecodePrivateKey(ssl, &args->length); 					// (PQ) Private Key
                 if (ret != 0)
                     goto exit_scv;
@@ -5426,21 +5419,8 @@ static int SendTls13CertificateVerify(WOLFSSL* ssl)
 #ifdef HAVE_POSTQUANTUM
             if (ssl->hsType == DYNAMIC_TYPE_POSTQUANTUM){
 
-                sig->length = WC_MAX_DIGEST_SIZE;
-                sig->buffer = (byte*)XMALLOC(sig->length, ssl->heap,
-                                                        DYNAMIC_TYPE_SIGNATURE);
-                if (sig->buffer == NULL) {
-                    ERROR_OUT(MEMORY_E, exit_scv);
-                }
-
-                ret = CreateRSAEncodedSig(sig->buffer, args->sigData,
-                    args->sigDataSz, args->sigAlgo, ssl->suites->hashAlgo);
-                if (ret < 0)
-                    goto exit_scv;
-                sig->length = ret;
-                ret = 0;
-
                 /* Maximum size of PQ Signature. */
+            	sig->length = args->sigDataSz;
                 args->sigLen = CRYPTO_BYTES;
             }
 
@@ -5555,9 +5535,9 @@ static int SendTls13CertificateVerify(WOLFSSL* ssl)
 
             if (ssl->hsType == DYNAMIC_TYPE_POSTQUANTUM) {
 
-            	/* Create the signature over the hash of the Data-to-be-Signed */
+            	/* Create the signature over the Data-to-be-Signed */
             	ret = crypto_sign_signature(args->verify + HASH_SIG_SIZE + VERIFY_HEADER, (word64*)&args->sigLen,
-            								sig->buffer, sig->length, (byte*)ssl->hsKey);
+            								args->sigData, args->sigDataSz, (byte*)ssl->hsKey);
                 if (ret == 0) {
                     args->length = (word16)args->sigLen; //for the final length
                 }
@@ -5567,9 +5547,9 @@ static int SendTls13CertificateVerify(WOLFSSL* ssl)
 	#ifdef HAVE_FALCON
             if (ssl->hsType == DYNAMIC_TYPE_POSTQUANTUM) {
 
-            	/* Create the signature over the hash of the Data-to-be-Signed */
+            	/* Create the signature over the Data-to-be-Signed */
           	ret = crypto_sign_signature(args->verify + HASH_SIG_SIZE + VERIFY_HEADER, (word64*)&args->sigLen,
-            	            								sig->buffer, sig->length, (byte *)ssl->hsKey);
+          									args->sigData, args->sigDataSz, (byte *)ssl->hsKey);
 
                 if (ret == 0) {
                     args->length = (word16)args->sigLen; //for final length
@@ -5614,11 +5594,15 @@ static int SendTls13CertificateVerify(WOLFSSL* ssl)
 
 #ifdef HAVE_POSTQUANTUM
 	#ifdef HAVE_DILITHIUM
-            if (ssl->hsType == DYNAMIC_TYPE_POSTQUANTUM) {
 
-            	/* Check for signature faults (mimicking RSA's behaviour; can be ommited) */
-            	ret = crypto_sign_verify(args->verify + HASH_SIG_SIZE + VERIFY_HEADER, args->sigLen,
-            			sig->buffer, sig->length, pubK);
+        	if (ssl->hsType == DYNAMIC_TYPE_POSTQUANTUM) {
+
+//            	/* Check for signature faults (mimicking RSA's behaviour; can be ommited) */
+//            	ret = crypto_sign_verify(args->verify + HASH_SIG_SIZE + VERIFY_HEADER, args->sigLen,
+//            			args->sigData, args->sigDataSz, pubK);
+
+
+        		/* Nothing to do here, fall through */
             }
 
 	#endif
@@ -5626,9 +5610,12 @@ static int SendTls13CertificateVerify(WOLFSSL* ssl)
 
             if (ssl->hsType == DYNAMIC_TYPE_POSTQUANTUM) {
 
-            	/* Check for signature faults (mimicking RSA's behaviour; can be ommited) */
-                ret = crypto_sign_verify(args->verify + HASH_SIG_SIZE + VERIFY_HEADER, args->sigLen,
-            			sig->buffer, sig->length, pubK);
+//            	/* Check for signature faults (mimicking RSA's behaviour; can be ommited) */
+//                ret = crypto_sign_verify(args->verify + HASH_SIG_SIZE + VERIFY_HEADER, args->sigLen,
+//            			sig->buffer, sig->length, pubK);
+
+
+        		/* Nothing to do here, fall through */
             }
 	#endif
 #endif /* HAVE_POSTQUANTUM */
@@ -6018,16 +6005,11 @@ static int DoTls13CertificateVerify(WOLFSSL* ssl, byte* input,
             if (ssl->peerDilithiumKey != NULL && ssl->peerDilithiumKeyPresent != 0) {
                 WOLFSSL_MSG("Doing Dilithium peer signature verify");
 
-                // BUILD THE HASH, WHICH SHOULD MATCH WITH THE DECRYPTED SIGNATURE
+                /* Create the data to be signed. */
 				ret = CreateSigData(ssl, args->sigData, &args->sigDataSz, 1);
 				if (ret != 0)
 					return ret;
 
-				ret = CreateRSAEncodedSig(args->sigData, args->sigData,
-						args->sigDataSz, args->sigAlgo, args->hashAlgo);
-				if (ret < 0)
-					return ret;
-				args->sigDataSz = ret;
 				ret = 0;
             }
 	#endif
@@ -6035,16 +6017,11 @@ static int DoTls13CertificateVerify(WOLFSSL* ssl, byte* input,
             if (ssl->peerFalconKey != NULL && ssl->peerFalconKeyPresent != 0) {
                 WOLFSSL_MSG("Doing Falcon peer signature verify");
 
-                // BUILD THE HASH, WHICH SHOULD MATCH WITH THE DECRYPTED SIGNATURE
+                /* Create the data to be signed. */
 				ret = CreateSigData(ssl, args->sigData, &args->sigDataSz, 1);
 				if (ret != 0)
 					return ret;
 
-				ret = CreateRSAEncodedSig(args->sigData, args->sigData,
-						args->sigDataSz, args->sigAlgo, args->hashAlgo);
-				if (ret < 0)
-					return ret;
-				args->sigDataSz = ret;
 				ret = 0;
             }
 	#endif
@@ -6152,8 +6129,6 @@ static int DoTls13CertificateVerify(WOLFSSL* ssl, byte* input,
             	/* Verify the signature */
                 ret = crypto_sign_verify(sig->buffer, sig->length,
                 		args->sigData, args->sigDataSz, ssl->peerDilithiumKey);
-
-
             }
 	#endif
 	#ifdef HAVE_FALCON
