@@ -9,9 +9,9 @@
 #define WOLFCRYPT_POSTQUANTUM_SABER_SABER_SECURITY_H_
 
 /*-------------------------------------------------------------*/
-	#define SABER_SECURITY_LEVEL 2		//HAVE_LIGHTSABER		|
+	#define SABER_SECURITY_LEVEL 1		//HAVE_LIGHTSABER		|
 //	#define SABER_SECURITY_LEVEL 3		//HAVE_VANILLASABER		|
-//	#define SABER_SECURITY_LEVEL 4		//HAVE_FIRESABER		|
+//	#define SABER_SECURITY_LEVEL 5		//HAVE_FIRESABER		|
 /*-------------------------------------------------------------*/
 
 #endif /* WOLFCRYPT_POSTQUANTUM_SABER_SABER_SECURITY_H_ */

@@ -1866,11 +1866,11 @@ int bench_tls(void* args)
 	#endif
 
 	#ifdef SABER_SECURITY_LEVEL
-		#if SABER_SECURITY_LEVEL==2
+		#if SABER_SECURITY_LEVEL==1
 				printf("TLS key exchange method: \t\t%s\n", PQCLEAN_LIGHTSABER_CLEAN_CRYPTO_ALGNAME);
 		#elif SABER_SECURITY_LEVEL==3
 				printf("TLS key exchange method: \t\t%s\n", PQCLEAN_SABER_CLEAN_CRYPTO_ALGNAME);
-		#elif SABER_SECURITY_LEVEL==4
+		#elif SABER_SECURITY_LEVEL==5
 				printf("TLS key exchange method: \t\t%s\n", PQCLEAN_FIRESABER_CLEAN_CRYPTO_ALGNAME);
 		#endif /* SABER_SECURITY_LEVEL */
 	#endif

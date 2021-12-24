@@ -10345,13 +10345,13 @@ static int TLSX_PopulateSupportedGroups(WOLFSSL* ssl, TLSX** extensions)
 	#endif /* HAVE_KYBER */
 
 	#ifdef HAVE_SABER
-		#if SABER_SECURITY_LEVEL==2
+		#if SABER_SECURITY_LEVEL==1
             ret = TLSX_UseSupportedCurve(extensions, WOLFSSL_SABER_LEVEL1, ssl->heap);
             if (ret != WOLFSSL_SUCCESS) return ret;
 		#elif SABER_SECURITY_LEVEL==3
             ret = TLSX_UseSupportedCurve(extensions, WOLFSSL_SABER_LEVEL3, ssl->heap);
             if (ret != WOLFSSL_SUCCESS) return ret;
-		#elif SABER_SECURITY_LEVEL==4
+		#elif SABER_SECURITY_LEVEL==5
             ret = TLSX_UseSupportedCurve(extensions, WOLFSSL_SABER_LEVEL5, ssl->heap);
             if (ret != WOLFSSL_SUCCESS) return ret;
 		#endif /* SABER_SECURITY_LEVEL */
@@ -10777,11 +10777,11 @@ int TLSX_PopulateExtensions(WOLFSSL* ssl, byte isServer)
             		#endif /* HAVE_KYBER */
 
             		#ifdef HAVE_SABER
-            			#if SABER_SECURITY_LEVEL == 2
+            			#if SABER_SECURITY_LEVEL == 1
             				namedGroup = WOLFSSL_SABER_LEVEL1;
             			#elif SABER_SECURITY_LEVEL == 3
             				namedGroup = WOLFSSL_SABER_LEVEL3;
-            			#elif SABER_SECURITY_LEVEL == 4
+            			#elif SABER_SECURITY_LEVEL == 5
             				namedGroup = WOLFSSL_SABER_LEVEL5;
             			#endif
             		#endif /* HAVE_SABER */

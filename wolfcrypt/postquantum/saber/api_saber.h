@@ -10,7 +10,7 @@
 
 #include "saber_security.h"
 
-#if SABER_SECURITY_LEVEL==2
+#if SABER_SECURITY_LEVEL==1
 	#include "wolfcrypt/postquantum/saber/lightsaber/api.h"
 #elif SABER_SECURITY_LEVEL==3
 	#include "wolfcrypt/postquantum/saber/saber_/api.h"
