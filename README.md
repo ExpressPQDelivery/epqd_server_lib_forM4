@@ -13,12 +13,12 @@ This is a tweeked version of WolfSSL that enables the use of Postquantum algorit
 
 ## System Requirements
 
-This version is targeting theoretically any Linux system and it requires: `autoconf` `autotools-dev` `automake` `libtool` and possibly other, more common packages like `gcc`. 
+This version is targeting theoretically any Linux system and it requires: `autoconf` `automake` `libtool` and possibly other, more common packages like `gcc`. 
 
 Install the requirements:
 ```
 sudo apt update
-sudo apt install make autoconf autotools-dev automake libtool git
+sudo apt install make autoconf automake libtool git
 ```
 
 The only thing on this project that is system specific is the **PQClean crypto libraries**. 
