@@ -89,6 +89,12 @@ Optionally we can install the library on the system for using PQ WolfSSL on prog
 sudo make install
 ```
 
+Additianlly, some can pass harware optimization flags to the compiler to make use of Intel assembly and aesni options. Keep in mind that some things may be **NOT** working properly with these flags. Use it on your own risk.
+
+```
+./configure --enable-tls13 --disable-tlsv12 --disable-oldtls --disable-shared --disable-static --enable-intelasm --enable-aesni --enable-sp --enable-sp-asm
+```
+
 ### Windows
 
 Maybe you can import this project to EclipseCDT (or maybe another IDE) as a Makefile project or even as an Autotools project and do the Ubuntu installation steps 3-6 from the IDE. Unfortunately steps 1-2 must be done manually.
