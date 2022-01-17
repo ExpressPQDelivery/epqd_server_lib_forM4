@@ -13,7 +13,7 @@ This is a tweeked version of WolfSSL that enables the use of Postquantum algorit
 
 ## System Requirements
 
-This version is targeting theoretically any Linux system and it requires: `autoconf` `automake` `libtool` and possibly other, more common packages like `gcc`. 
+This version is targeting theoretically any Linux system and it requires: `git` `autoconf` `automake` `libtool` and possibly other, more common packages like `gcc` or `make`. 
 
 Install the requirements:
 ```
@@ -89,7 +89,7 @@ Optionally we can install the library on the system for using PQ WolfSSL on prog
 sudo make install
 ```
 
-Additianlly, some can pass harware optimization flags to the compiler to make use of Intel assembly and aesni options. Keep in mind that some things may be **NOT** working properly with these flags. Use it on your own risk.
+Additionally, one can pass harware optimization flags to the compiler to make use of _Intel assembly_ and _aesni_ options. Keep in mind that some things may **NOT** be working properly with these flags. Use it on your own risk.
 
 ```
 ./configure --enable-tls13 --disable-tlsv12 --disable-oldtls --disable-shared --disable-static --enable-intelasm --enable-aesni --enable-sp --enable-sp-asm
