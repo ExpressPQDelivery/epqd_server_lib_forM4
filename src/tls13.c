@@ -397,6 +397,8 @@ static int DeriveKey(WOLFSSL* ssl, byte* output, int outputLen,
     word32      protocolLen;
     int         digestAlg = 0;
 
+    XMEMSET(hash, 0, WC_MAX_DIGEST_SIZE);
+
     switch (hashAlgo) {
         #ifndef NO_SHA256
             case sha256_mac:
