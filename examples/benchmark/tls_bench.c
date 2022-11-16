@@ -74,6 +74,24 @@ bench_tls(args);
     #ifdef HAVE_SABER
         #include <wolfcrypt/postquantum/saber/api_saber.h>
     #endif
+	#ifdef HAVE_FRODO
+        #include <wolfcrypt/postquantum/frodo/api_frodo.h>
+	#endif
+	#ifdef HAVE_BIKE
+		#include <wolfcrypt/postquantum/bike/api_bike.h>
+	#endif
+	#ifdef HAVE_SIKE
+		#include <wolfcrypt/postquantum/sike/api_sike.h>
+	#endif
+	#ifdef HAVE_HQC
+		#include <wolfcrypt/postquantum/hqc/api_hqc.h>
+	#endif
+	#ifdef HAVE_NTRULPR
+		#include <wolfcrypt/postquantum/ntrulpr/api_ntrulpr.h>
+	#endif
+	#ifdef HAVE_NTRU_PQM4
+		#include <wolfcrypt/postquantum/ntru/api_ntru.h>
+	#endif
 #endif /* HAVE_POSTQUANTUM */
 
 /* Enable this to adjust transferred sizes for benchmark with Nucleo */
@@ -106,7 +124,7 @@ bench_tls(args);
 #endif
 
 /* Defaults for configuration parameters */
-#define BENCH_DEFAULT_HOST  "192.168.1.14" // Will be overwritten by passing and argument to the command i.e " -h "192.168.1.128"
+#define BENCH_DEFAULT_HOST  "192.168.2.10" // Will be overwritten by passing and argument to the command i.e " -h "192.168.1.128"
 #define BENCH_DEFAULT_PORT  11112
 #define NUM_THREAD_PAIRS    1 /* Thread pairs of server/client */
 #ifndef BENCH_RUNTIME_SEC
@@ -838,11 +856,12 @@ static int bench_tls_client(info_t* info)
 
 #ifdef HAVE_POSTQUANTUM
 
-            /* LOAD THE PQ CA CERTIFICATE */
+            			/* LOAD THE PQ CA CERTIFICATE */
 #ifdef HAVE_DILITHIUM
     #if DILITHIUM_MODE == 2 //CERTS_TEST.H is included
         ret = wolfSSL_CTX_load_verify_buffer(cli_ctx, dilithium2_ca_cert_der,
                 sizeof_dilithium2_ca_cert_der, WOLFSSL_FILETYPE_ASN1);
+//    ret = wolfSSL_CTX_load_verify_locations(cli_ctx, "examples/benchmark/certs/pem/ca-cert.crt", NULL);
     #elif DILITHIUM_MODE == 3
         ret = wolfSSL_CTX_load_verify_buffer(cli_ctx, dilithium3_ca_cert_der,
                 sizeof_dilithium3_ca_cert_der, WOLFSSL_FILETYPE_ASN1);
@@ -860,24 +879,184 @@ static int bench_tls_client(info_t* info)
                 sizeof_falcon1024_ca_cert_der, WOLFSSL_FILETYPE_ASN1);
     #endif
 #endif
+#ifdef HAVE_PICNIC
+		ret = wolfSSL_CTX_load_verify_buffer(cli_ctx, picnic3l1_ca_cert_der,
+				sizeof_picnic3l1_ca_cert_der, WOLFSSL_FILETYPE_ASN1);
+#endif /* HAVE_PICNIC */
 
-#else
+#ifdef HAVE_SPHINCS
+	#if SPHINCS_SECURITY_LEVEL==1
+		#ifdef SPHINCS_VARIANT_FAST
+		ret = wolfSSL_CTX_load_verify_buffer(cli_ctx, sphincs128fsimple_ca_cert_der,
+				sizeof_sphincs128fsimple_ca_cert_der, WOLFSSL_FILETYPE_ASN1);
+		#else
+		ret = wolfSSL_CTX_load_verify_buffer(cli_ctx, sphincs128ssimple_ca_cert_der,
+				sizeof_sphincs128ssimple_ca_cert_der, WOLFSSL_FILETYPE_ASN1);
+		#endif /* SPHINCS_VARIANT */
+	#elif SPHINCS_SECURITY_LEVEL==3
+	#else
+	#endif /* SPHINCS_SECURITY_LEVEL */
+#endif /* HAVE_SPHINCS */
 
-#ifdef HAVE_ECC
-    if (0) {
-        ret = wolfSSL_CTX_load_verify_buffer(cli_ctx, ca_ecc_cert_der_256,
-            sizeof_ca_ecc_cert_der_256, WOLFSSL_FILETYPE_ASN1);
-    }
-    else
+        	/* */
+
+#ifdef HAVE_MUTUAL_AUTH
+
+        				/* LOAD THE PQ CLIENT PRIVATE KEY */
+#ifdef HAVE_DILITHIUM
+	#if DILITHIUM_MODE == 2 //Included by certs_test.h
+		ret = wolfSSL_CTX_use_PrivateKey_buffer(cli_ctx, dilithium2_client_key_der,
+		sizeof_dilithium2_client_key_der, WOLFSSL_FILETYPE_ASN1);
+//		ret = wolfSSL_CTX_use_PrivateKey_file(cli_ctx, "examples/benchmark/certs/pem/client-key.key", WOLFSSL_FILETYPE_PEM);
+	#elif DILITHIUM_MODE == 3
+		ret = wolfSSL_CTX_use_PrivateKey_buffer(cli_ctx, dilithium3_client_key_der,
+				sizeof_dilithium3_client_key_der, WOLFSSL_FILETYPE_ASN1);
+	#else /* DILITHIUM_MODE == 4 */
+		ret = wolfSSL_CTX_use_PrivateKey_buffer(cli_ctx, dilithium5_client_key_der,
+				sizeof_dilithium5_client_key_der, WOLFSSL_FILETYPE_ASN1);
+	#endif
 #endif
-    {
-        ret = wolfSSL_CTX_load_verify_buffer(cli_ctx, ca_cert_der_2048,
-            sizeof_ca_cert_der_2048, WOLFSSL_FILETYPE_ASN1);
-    }
+#ifdef HAVE_FALCON
+	#ifdef HAVE_FALCON512
+		ret = wolfSSL_CTX_use_PrivateKey_buffer(cli_ctx, falcon512_client_key_der,
+		sizeof_falcon512_client_key_der, WOLFSSL_FILETYPE_ASN1);
+	#else /* HAVE_FALCON1024 */
+		ret = wolfSSL_CTX_use_PrivateKey_buffer(cli_ctx, falcon1024_client_key_der,
+		sizeof_falcon1024_client_key_der, WOLFSSL_FILETYPE_ASN1);
+	#endif
+#endif /* HAVE_FALCON */
+#ifdef HAVE_PICNIC
+		ret = wolfSSL_CTX_use_PrivateKey_buffer(cli_ctx, picnic3l1_client_key_der,
+		sizeof_picnic3l1_client_key_der, WOLFSSL_FILETYPE_ASN1);
+#endif /* HAVE_PICNIC */
+
+#ifdef HAVE_SPHINCS
+	#if SPHINCS_SECURITY_LEVEL==1
+		#ifdef SPHINCS_VARIANT_FAST
+		ret = wolfSSL_CTX_use_PrivateKey_buffer(cli_ctx, sphincs128fsimple_client_key_der,
+		sizeof_sphincs128fsimple_client_key_der, WOLFSSL_FILETYPE_ASN1);
+		#else
+		ret = wolfSSL_CTX_use_PrivateKey_buffer(cli_ctx, sphincs128ssimple_client_key_der,
+		sizeof_sphincs128ssimple_client_key_der, WOLFSSL_FILETYPE_ASN1);
+		#endif /* SPHINCS_VARIANT */
+	#elif SPHINCS_SECURITY_LEVEL==3
+	#else
+	#endif /* SPHINCS_SECURITY_LEVEL */
+#endif /* HAVE_SPHINCS */
+
+
+        				/* LOAD THE PQ CLIENT CERTIFICATE */
+#ifdef HAVE_DILITHIUM
+	#if DILITHIUM_MODE == 2
+		ret = wolfSSL_CTX_use_certificate_buffer(cli_ctx, dilithium2_client_cert_der,
+		sizeof_dilithium2_client_cert_der, WOLFSSL_FILETYPE_ASN1);
+//		ret = wolfSSL_CTX_use_certificate_file(cli_ctx, "examples/benchmark/certs/pem/client-cert.crt", WOLFSSL_FILETYPE_PEM);
+	#elif DILITHIUM_MODE == 3
+		ret = wolfSSL_CTX_use_certificate_buffer(cli_ctx, dilithium3_client_cert_der,
+		sizeof_dilithium3_client_cert_der, WOLFSSL_FILETYPE_ASN1);
+	#else /* DILITHIUM_MODE == 4 */
+		ret = wolfSSL_CTX_use_certificate_buffer(cli_ctx, dilithium5_client_cert_der,
+		sizeof_dilithium5_client_cert_der, WOLFSSL_FILETYPE_ASN1);
+	#endif
+#endif
+#ifdef HAVE_FALCON
+	#ifdef HAVE_FALCON512
+		ret = wolfSSL_CTX_use_certificate_buffer(cli_ctx, falcon512_client_cert_der,
+		sizeof_falcon512_client_cert_der, WOLFSSL_FILETYPE_ASN1);
+	#else /* HAVE_FALCON1024 */
+		ret = wolfSSL_CTX_use_certificate_buffer(cli_ctx, falcon1024_client_cert_der,
+		sizeof_falcon1024_client_cert_der, WOLFSSL_FILETYPE_ASN1);
+	#endif
+#endif
+#ifdef HAVE_PICNIC
+		ret = wolfSSL_CTX_use_certificate_buffer(cli_ctx, picnic3l1_client_cert_der,
+		sizeof_picnic3l1_client_cert_der, WOLFSSL_FILETYPE_ASN1);
+#endif /* HAVE_PICNIC */
+
+#ifdef HAVE_SPHINCS
+	#if SPHINCS_SECURITY_LEVEL==1
+		#ifdef SPHINCS_VARIANT_FAST
+		ret = wolfSSL_CTX_use_certificate_buffer(cli_ctx, sphincs128fsimple_client_cert_der,
+		sizeof_sphincs128fsimple_client_cert_der, WOLFSSL_FILETYPE_ASN1);
+		#else
+		ret = wolfSSL_CTX_use_certificate_buffer(cli_ctx, sphincs128ssimple_client_cert_der,
+		sizeof_sphincs128ssimple_client_cert_der, WOLFSSL_FILETYPE_ASN1);
+		#endif /* SPHINCS_VARIANT */
+	#elif SPHINCS_SECURITY_LEVEL==3
+	#else
+	#endif /* SPHINCS_SECURITY_LEVEL */
+#endif /* HAVE_SPHINCS */
+
+#endif /* HAVE_MUTUAL_AUTH */
+        			/*  */
+
+#else // Traditional
+
+	#ifdef MY_HAVE_ECC
+				/* LOAD THE ECC CA CERTIFICATE */
+		ret = wolfSSL_CTX_load_verify_buffer(cli_ctx, ca_ecc_cert_der_256,
+			sizeof_ca_ecc_cert_der_256, WOLFSSL_FILETYPE_ASN1);
+
+	#else
+				/* LOAD THE RSA CA CERTIFICATE */
+		ret = wolfSSL_CTX_load_verify_buffer(cli_ctx, ca_cert_der_2048,
+			sizeof_ca_cert_der_2048, WOLFSSL_FILETYPE_ASN1);
+
+	#endif /* MY_HAVE_ECC */
+
+
     if (ret != WOLFSSL_SUCCESS) {
         printf("error loading CA\n");
         goto exit;
     }
+
+	#ifdef HAVE_MUTUAL_AUTH
+
+
+	#ifdef MY_HAVE_ECC 		// ECC
+
+			/* LOAD THE CLIENT PRIVATE KEY */
+			ret = wolfSSL_CTX_use_PrivateKey_buffer(cli_ctx, ecc_clikey_der_256,
+					sizeof_ecc_clikey_der_256, WOLFSSL_FILETYPE_ASN1);
+
+			if (ret != WOLFSSL_SUCCESS) {
+				printf("error loading PQ Client Private Key\n");
+				goto exit;
+			}
+
+			/* LOAD THE CLIENT CERTIFICATE */
+			ret = wolfSSL_CTX_use_certificate_buffer(cli_ctx, cliecc_cert_der_256,
+				sizeof_cliecc_cert_der_256, WOLFSSL_FILETYPE_ASN1);
+
+			if (ret != WOLFSSL_SUCCESS) {
+				printf("error loading PQ Client Cert\n");
+				goto exit;
+			}
+
+	#else 				// RSA
+
+
+		/* LOAD THE CLIENT PRIVATE KEY */
+		ret = wolfSSL_CTX_use_PrivateKey_buffer(cli_ctx, client_key_der_2048,
+				sizeof_client_key_der_2048, WOLFSSL_FILETYPE_ASN1);
+
+		if (ret != WOLFSSL_SUCCESS) {
+			printf("error loading PQ Client Private Key\n");
+			goto exit;
+		}
+
+		/* LOAD THE CLIENT CERTIFICATE */
+		ret = wolfSSL_CTX_use_certificate_buffer(cli_ctx, client_cert_der_2048,
+				sizeof_client_cert_der_2048, WOLFSSL_FILETYPE_ASN1);
+
+		if (ret != WOLFSSL_SUCCESS) {
+			printf("error loading PQ Client Cert\n");
+			goto exit;
+		}
+
+	#endif
+
+	#endif /* HAVE_MUTUAL_AUTH */
 
 #endif /* HAVE_POSTQUANTUM */
 #endif
@@ -1264,13 +1443,20 @@ static int bench_tls_server(info_t* info)
 
 #ifndef NO_CERTS
 
+#ifdef HAVE_MUTUAL_AUTH
+    /* Require mutual authentication */
+    wolfSSL_CTX_set_verify(srv_ctx,
+        WOLFSSL_VERIFY_PEER | WOLFSSL_VERIFY_FAIL_IF_NO_PEER_CERT, NULL);
+#endif
+
 #ifdef HAVE_POSTQUANTUM
 
-                                /* LOAD THE PQ PRIVATE KEY */
+                                /* LOAD THE PQ SERVER PRIVATE KEY */
 #ifdef HAVE_DILITHIUM
     #if DILITHIUM_MODE == 2 //Included by certs_test.h
         ret = wolfSSL_CTX_use_PrivateKey_buffer(srv_ctx, dilithium2_server_key_der,
                 sizeof_dilithium2_server_key_der, WOLFSSL_FILETYPE_ASN1);
+//    ret = wolfSSL_CTX_use_PrivateKey_file(srv_ctx, "examples/benchmark/certs/pem/server-key.key", WOLFSSL_FILETYPE_PEM);
     #elif DILITHIUM_MODE == 3
         ret = wolfSSL_CTX_use_PrivateKey_buffer(srv_ctx, dilithium3_server_key_der,
                                 sizeof_dilithium3_server_key_der, WOLFSSL_FILETYPE_ASN1);
@@ -1288,12 +1474,33 @@ static int bench_tls_server(info_t* info)
                 sizeof_falcon1024_server_key_der, WOLFSSL_FILETYPE_ASN1);
     #endif
 #endif /* HAVE_FALCON */
+#ifdef HAVE_PICNIC
+		ret = wolfSSL_CTX_use_PrivateKey_buffer(srv_ctx, picnic3l1_server_key_der,
+				sizeof_picnic3l1_server_key_der, WOLFSSL_FILETYPE_ASN1);
+#endif /* HAVE_PICNIC */
 
-                                /* LOAD THE PQ CERTIFICATE */
+#ifdef HAVE_SPHINCS
+	#if SPHINCS_SECURITY_LEVEL==1
+		#ifdef SPHINCS_VARIANT_FAST
+			ret = wolfSSL_CTX_use_PrivateKey_buffer(srv_ctx, sphincs128fsimple_server_key_der,
+					sizeof_sphincs128fsimple_server_key_der, WOLFSSL_FILETYPE_ASN1);
+		#else
+			ret = wolfSSL_CTX_use_PrivateKey_buffer(srv_ctx, sphincs128ssimple_server_key_der,
+					sizeof_sphincs128ssimple_server_key_der, WOLFSSL_FILETYPE_ASN1);
+		#endif /* SPHINCS_VARIANT */
+	#elif SPHINCS_SECURITY_LEVEL==3
+	#else
+	#endif /* SPHINCS_SECURITY_LEVEL */
+#endif /* HAVE_SPHINCS */
+
+
+                                /* LOAD THE PQ SERVER CERTIFICATE */
 #ifdef HAVE_DILITHIUM
     #if DILITHIUM_MODE == 2
         ret = wolfSSL_CTX_use_certificate_buffer(srv_ctx, dilithium2_server_cert_der,
                     sizeof_dilithium2_server_cert_der, WOLFSSL_FILETYPE_ASN1);
+//			ret = wolfSSL_CTX_use_certificate_file(srv_ctx, "examples/benchmark/certs/pem/server-cert.crt", WOLFSSL_FILETYPE_PEM);
+//			ret = wolfSSL_CTX_use_certificate_file(srv_ctx, "examples/benchmark/certs/drone1Cert.pem", WOLFSSL_FILETYPE_PEM);
     #elif DILITHIUM_MODE == 3
         ret = wolfSSL_CTX_use_certificate_buffer(srv_ctx, dilithium3_server_cert_der,
                     sizeof_dilithium3_server_cert_der, WOLFSSL_FILETYPE_ASN1);
@@ -1311,39 +1518,128 @@ static int bench_tls_server(info_t* info)
                     sizeof_falcon1024_server_cert_der, WOLFSSL_FILETYPE_ASN1);
     #endif
 #endif
+#ifdef HAVE_PICNIC
+		ret = wolfSSL_CTX_use_certificate_buffer(srv_ctx, picnic3l1_server_cert_der,
+					sizeof_picnic3l1_server_cert_der, WOLFSSL_FILETYPE_ASN1);
+#endif /* HAVE_PICNIC */
+
+#ifdef HAVE_SPHINCS
+	#if SPHINCS_SECURITY_LEVEL==1
+		#ifdef SPHINCS_VARIANT_FAST
+		ret = wolfSSL_CTX_use_certificate_buffer(srv_ctx, sphincs128fsimple_server_cert_der,
+					sizeof_sphincs128fsimple_server_cert_der, WOLFSSL_FILETYPE_ASN1);
+		#else
+		ret = wolfSSL_CTX_use_certificate_buffer(srv_ctx, sphincs128ssimple_server_cert_der,
+					sizeof_sphincs128ssimple_server_cert_der, WOLFSSL_FILETYPE_ASN1);
+		#endif /* SPHINCS_VARIANT */
+	#elif SPHINCS_SECURITY_LEVEL==3
+	#else
+	#endif /* SPHINCS_SECURITY_LEVEL */
+#endif /* HAVE_SPHINCS */
+
+
+        /* */
+#ifdef HAVE_MUTUAL_AUTH
+
+					/* LOAD THE PQ CA CERTIFICATE */
+#ifdef HAVE_DILITHIUM
+	#if DILITHIUM_MODE == 2 //CERTS_TEST.H is included
+		ret = wolfSSL_CTX_load_verify_buffer(srv_ctx, dilithium2_ca_cert_der,
+		sizeof_dilithium2_ca_cert_der, WOLFSSL_FILETYPE_ASN1);
+//		ret = wolfSSL_CTX_load_verify_locations(srv_ctx, "examples/benchmark/certs/pem/ca-cert.crt", NULL);
+	#elif DILITHIUM_MODE == 3
+		ret = wolfSSL_CTX_load_verify_buffer(srv_ctx, dilithium3_ca_cert_der,
+		sizeof_dilithium3_ca_cert_der, WOLFSSL_FILETYPE_ASN1);
+	#else /* DILITHIUM_MODE == 4 */
+		ret = wolfSSL_CTX_load_verify_buffer(srv_ctx, dilithium5_ca_cert_der,
+		sizeof_dilithium5_ca_cert_der, WOLFSSL_FILETYPE_ASN1);
+	#endif
+#endif
+#ifdef HAVE_FALCON
+	#ifdef HAVE_FALCON512
+		ret = wolfSSL_CTX_load_verify_buffer(srv_ctx, falcon512_ca_cert_der,
+		sizeof_falcon512_ca_cert_der, WOLFSSL_FILETYPE_ASN1);
+	#else /* HAVE_FALCON1024 */
+		ret = wolfSSL_CTX_load_verify_buffer(srv_ctx, falcon1024_ca_cert_der,
+		sizeof_falcon1024_ca_cert_der, WOLFSSL_FILETYPE_ASN1);
+	#endif
+#endif
+#ifdef HAVE_PICNIC
+		ret = wolfSSL_CTX_load_verify_buffer(srv_ctx, picnic3l1_ca_cert_der,
+		sizeof_picnic3l1_ca_cert_der, WOLFSSL_FILETYPE_ASN1);
+#endif /* HAVE_PICNIC */
+
+#ifdef HAVE_SPHINCS
+	#if SPHINCS_SECURITY_LEVEL==1
+		#ifdef SPHINCS_VARIANT_FAST
+			ret = wolfSSL_CTX_load_verify_buffer(srv_ctx, sphincs128fsimple_ca_cert_der,
+			sizeof_sphincs128fsimple_ca_cert_der, WOLFSSL_FILETYPE_ASN1);
+		#else
+			ret = wolfSSL_CTX_load_verify_buffer(srv_ctx, sphincs128ssimple_ca_cert_der,
+			sizeof_sphincs128ssimple_ca_cert_der, WOLFSSL_FILETYPE_ASN1);
+		#endif /* SPHINCS_VARIANT */
+	#elif SPHINCS_SECURITY_LEVEL==3
+	#else
+	#endif /* SPHINCS_SECURITY_LEVEL */
+#endif /* HAVE_SPHINCS */
+
+#endif /* HAVE_MUTUAL_AUTH */
+			/* */
+
 
 #else
-#ifdef HAVE_ECC
-    if (0) {
-        ret = wolfSSL_CTX_use_PrivateKey_buffer(srv_ctx, ecc_key_der_256,
-            sizeof_ecc_key_der_256, WOLFSSL_FILETYPE_ASN1);
-    }
-    else
-#endif
-    {
-        ret = wolfSSL_CTX_use_PrivateKey_buffer(srv_ctx, server_key_der_2048,
-            sizeof_server_key_der_2048, WOLFSSL_FILETYPE_ASN1);
-    }
+	#ifdef MY_HAVE_ECC
+					/* LOAD ECC SERVER PRIVATE KEY */
+		ret = wolfSSL_CTX_use_PrivateKey_buffer(srv_ctx, ecc_key_der_256,
+			sizeof_ecc_key_der_256, WOLFSSL_FILETYPE_ASN1);
+
+	#else
+
+					/* LOAD RSA SERVER PRIVATE KEY */
+		ret = wolfSSL_CTX_use_PrivateKey_buffer(srv_ctx, server_key_der_2048,
+			sizeof_server_key_der_2048, WOLFSSL_FILETYPE_ASN1);
+
+	#endif
+
     if (ret != WOLFSSL_SUCCESS) {
         printf("error loading server key\n");
         goto exit;
     }
 
-#ifdef HAVE_ECC
-    if (0) {
-        ret = wolfSSL_CTX_use_certificate_buffer(srv_ctx, serv_ecc_der_256,
-            sizeof_serv_ecc_der_256, WOLFSSL_FILETYPE_ASN1);
-    }
-    else
-#endif
-    {
-        ret = wolfSSL_CTX_use_certificate_buffer(srv_ctx, server_cert_der_2048,
-            sizeof_server_cert_der_2048, WOLFSSL_FILETYPE_ASN1);
-    }
+	#ifdef MY_HAVE_ECC
+					/* LOAD ECC SERVER CERTIFICATE */
+		ret = wolfSSL_CTX_use_certificate_buffer(srv_ctx, serv_ecc_der_256,
+			sizeof_serv_ecc_der_256, WOLFSSL_FILETYPE_ASN1);
+	#else
+					/* LOAD RSA SERVER CERTIFICATE */
+		ret = wolfSSL_CTX_use_certificate_buffer(srv_ctx, server_cert_der_2048,
+			sizeof_server_cert_der_2048, WOLFSSL_FILETYPE_ASN1);
+	#endif
+
+
     if (ret != WOLFSSL_SUCCESS) {
         printf("error loading server cert\n");
         goto exit;
     }
+
+
+	#ifdef HAVE_MUTUAL_AUTH
+		#ifdef MY_HAVE_ECC
+					/* LOAD THE ECC CA CERTIFICATE */
+			ret = wolfSSL_CTX_load_verify_buffer(srv_ctx, cliecc_cert_der_256,
+				sizeof_cliecc_cert_der_256, WOLFSSL_FILETYPE_ASN1);
+		#else
+					/* LOAD THE RSA CA CERTIFICATE */
+			ret = wolfSSL_CTX_load_verify_buffer(srv_ctx, client_cert_der_2048,
+				sizeof_client_cert_der_2048, WOLFSSL_FILETYPE_ASN1);
+		#endif
+
+		    if (ret != WOLFSSL_SUCCESS) {
+		        printf("error loading CA cert\n");
+		        goto exit;
+		    }
+
+#endif /* HAVE_MUTUAL_AUTH */
 
 #endif /* HAVE_POSTQUANTUM */
 #endif /* !NO_CERTS */
@@ -1875,24 +2171,63 @@ int bench_tls(void* args)
 		#endif /* SABER_SECURITY_LEVEL */
 	#endif
 
+#ifdef HAVE_FRODO
+				printf("TLS key exchange method: \t\t%s\n", CRYPTO_ALG_NAME);
+#endif /* HAVE_FRODO */
+#ifdef HAVE_BIKE
+		printf("TLS key exchange method: \t\t%s\n", MUPQ_CRYPTO_ALGNAME);
+#endif
+#ifdef HAVE_SIKE
+		printf("TLS key exchange method: \t\t%s\n", CRYPTO_ALGNAME);
+#endif
+#ifdef HAVE_HQC
+		printf("TLS key exchange method: \t\t%s\n", CRYPTO_ALGNAME);
+#endif
+#ifdef HAVE_NTRULPR
+		printf("TLS key exchange method: \t\t%s\n", PQCLEAN_NTRULPR_CRYPTO_ALGNAME);
+#endif
+#ifdef HAVE_NTRU_PQM4
+		printf("TLS key exchange method: \t\t%s\n", PQCLEAN_NTRU_CRYPTO_ALGNAME);
+#endif
 
-	#ifdef DILITHIUM_SECURITY_LEVEL
-		#if DILITHIUM_SECURITY_LEVEL==1
-				printf("TLS authentication method: \t\t%s\n\n", PQCLEAN_DILITHIUM2_CLEAN_CRYPTO_ALGNAME);
-		#elif DILITHIUM_SECURITY_LEVEL==3
-				printf("TLS authentication method: \t\t%s\n\n", PQCLEAN_DILITHIUM3_CLEAN_CRYPTO_ALGNAME);
-		#elif DILITHIUM_SECURITY_LEVEL==5
-				printf("TLS authentication method: \t\t%s\n\n", PQCLEAN_DILITHIUM5_CLEAN_CRYPTO_ALGNAME);
-		#endif /* DILITHIUM_SECURITY_LEVEL */
-	#endif
+	#ifdef HAVE_DILITHIUM
+		#ifdef DILITHIUM_SECURITY_LEVEL
+			#if DILITHIUM_SECURITY_LEVEL==1
+					printf("TLS authentication method: \t\t%s\n\n", PQCLEAN_DILITHIUM2_CLEAN_CRYPTO_ALGNAME);
+			#elif DILITHIUM_SECURITY_LEVEL==3
+					printf("TLS authentication method: \t\t%s\n\n", PQCLEAN_DILITHIUM3_CLEAN_CRYPTO_ALGNAME);
+			#elif DILITHIUM_SECURITY_LEVEL==5
+					printf("TLS authentication method: \t\t%s\n\n", PQCLEAN_DILITHIUM5_CLEAN_CRYPTO_ALGNAME);
+			#endif /* DILITHIUM_SECURITY_LEVEL */
+		#endif
+	#endif /* HAVE_DILITHIUM */
 
-	#ifdef FALCON_SECURITY_LEVEL
-		#if FALCON_SECURITY_LEVEL==1
-				printf("TLS authentication method: \t\t%s\n\n", PQCLEAN_FALCON512_CLEAN_CRYPTO_ALGNAME);
-		#elif FALCON_SECURITY_LEVEL==5
-				printf("TLS authentication method: \t\t%s\n\n", PQCLEAN_FALCON1024_CLEAN_CRYPTO_ALGNAME);
-		#endif /* FALCON_SECURITY_LEVEL */
-	#endif
+	#ifdef HAVE_FALCON
+		#ifdef FALCON_SECURITY_LEVEL
+			#if FALCON_SECURITY_LEVEL==1
+					printf("TLS authentication method: \t\t%s\n\n", PQCLEAN_FALCON512_CLEAN_CRYPTO_ALGNAME);
+			#elif FALCON_SECURITY_LEVEL==5
+					printf("TLS authentication method: \t\t%s\n\n", PQCLEAN_FALCON1024_CLEAN_CRYPTO_ALGNAME);
+			#endif /* FALCON_SECURITY_LEVEL */
+		#endif
+	#endif /* HAVE_FALCON */
+
+	#ifdef HAVE_PICNIC
+					printf("TLS authentication method: \t\t%s\n\n", CRYPTO_ALGNAME);
+	#endif /* HAVE_PICNIC */
+
+#ifdef HAVE_SPHINCS
+	#if SPHINCS_SECURITY_LEVEL==1
+		#ifdef SPHINCS_VARIANT_FAST
+					printf("TLS authentication method: \t\t%s%s\n\n", PQCLEAN_SPHINCSSHA256128FSIMPLE_CLEAN_CRYPTO_ALGNAME, " 128-fast-simple");
+		#else
+					printf("TLS authentication method: \t\t%s%s\n\n", PQCLEAN_SPHINCSSHA256128SSIMPLE_CLEAN_CRYPTO_ALGNAME, " 128-small-simple");
+		#endif /* SPHINCS_VARIANT */
+	#elif SPHINCS_SECURITY_LEVEL==3
+	#else
+	#endif /* SPHINCS_SECURITY_LEVEL */
+#endif /* HAVE_SPHINCS */
+
 #endif /* HAVE_POSTQUANTUM */
 
 

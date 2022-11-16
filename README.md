@@ -40,6 +40,7 @@ git clone https://gitlab.com/g_tasop/pq-wolfssl-for-pc
 
 ```
 git clone https://github.com/PQClean/PQClean.git
+git reset --hard e11209a9f1808e23132b0559c795c2b716fb0d3d
 ```
 
 3. Cd in the clone repository and run the auto generation script:

@@ -53,6 +53,24 @@
 	#ifdef HAVE_SABER
 		#include <wolfcrypt/postquantum/saber/api_saber.h>
 	#endif
+	#ifdef HAVE_FRODO
+		#include <wolfcrypt/postquantum/frodo/api_frodo.h>
+	#endif /* HAVE_FRODO */
+	#ifdef HAVE_BIKE
+		#include <wolfcrypt/postquantum/bike/api_bike.h>
+	#endif
+	#ifdef HAVE_SIKE
+		#include <wolfcrypt/postquantum/sike/api_sike.h>
+	#endif
+	#ifdef HAVE_HQC
+		#include <wolfcrypt/postquantum/hqc/api_hqc.h>
+	#endif
+	#ifdef HAVE_NTRULPR
+		#include <wolfcrypt/postquantum/ntrulpr/api_ntrulpr.h>
+	#endif
+	#ifdef HAVE_NTRU_PQM4
+		#include <wolfcrypt/postquantum/ntru/api_ntru.h>
+	#endif
 #endif /* HAVE_POSTQUANTUM */
 
 #ifdef HAVE_CURVE25519
@@ -7106,6 +7124,9 @@ static int TLSX_KeyShare_GenPQKey(WOLFSSL *ssl, KeyShareEntry* kse)
     pubKeyLen = CRYPTO_PUBLICKEYBYTES;
 	privKeyLen = CRYPTO_SECRETKEYBYTES;
 
+//	printf("pubKeyLen: %d\n", CRYPTO_PUBLICKEYBYTES);
+//	printf("privKeyLen: %d\n", CRYPTO_SECRETKEYBYTES);
+
 	/* Allocate space for the public key. */
 	pubKey = (byte*)XMALLOC(pubKeyLen, ssl->heap, DYNAMIC_TYPE_PUBLIC_KEY);
 
@@ -7137,6 +7158,54 @@ static int TLSX_KeyShare_GenPQKey(WOLFSSL *ssl, KeyShareEntry* kse)
 		case(WOLFSSL_SABER_LEVEL1):
 		case(WOLFSSL_SABER_LEVEL3):
 		case(WOLFSSL_SABER_LEVEL5):
+			if ((ret = crypto_kem_keypair(pubKey, privKey)) != 0){
+				goto end;
+			}
+#endif
+#ifdef HAVE_FRODO
+		case(WOLFSSL_FRODO_SHAKE_LEVEL1):
+		case(WOLFSSL_FRODO_AES_LEVEL1):
+			if ((ret = crypto_kem_keypair(pubKey, privKey)) != 0){
+				goto end;
+			}
+#endif
+#ifdef HAVE_BIKE
+		case(WOLFSSL_BIKE_LEVEL1):
+		case(WOLFSSL_BIKE_LEVEL3):
+			if ((ret = crypto_kem_keypair(pubKey, privKey)) != 0){
+				goto end;
+			}
+#endif
+#ifdef HAVE_SIKE
+		case(WOLFSSL_SIKE_LEVEL1_1):
+		case(WOLFSSL_SIKE_LEVEL1_2):
+		case(WOLFSSL_SIKE_LEVEL3):
+		case(WOLFSSL_SIKE_LEVEL5):
+			if ((ret = crypto_kem_keypair(pubKey, privKey)) != 0){
+				goto end;
+			}
+#endif
+#ifdef HAVE_HQC
+		case(WOLFSSL_HQC_LEVEL1):
+		case(WOLFSSL_HQC_LEVEL3):
+		case(WOLFSSL_HQC_LEVEL5):
+			if ((ret = crypto_kem_keypair(pubKey, privKey)) != 0){
+				goto end;
+			}
+#endif
+#ifdef HAVE_NTRULPR
+		case(WOLFSSL_NTRULPR_LEVEL1_1):
+		case(WOLFSSL_NTRULPR_LEVEL1_2):
+		case(WOLFSSL_NTRULPR_LEVEL3):
+		case(WOLFSSL_NTRULPR_LEVEL5):
+			if ((ret = crypto_kem_keypair(pubKey, privKey)) != 0){
+				goto end;
+			}
+#endif
+#ifdef HAVE_NTRU_PQM4
+		case(WOLFSSL_NTRU_PQM4_LEVEL1):
+		case(WOLFSSL_NTRU_PQM4_LEVEL3):
+		case(WOLFSSL_NTRU_PQM4_LEVEL5):
 			if ((ret = crypto_kem_keypair(pubKey, privKey)) != 0){
 				goto end;
 			}
@@ -7221,6 +7290,56 @@ static int TLSX_KeyShare_GenPQEncaps(WOLFSSL *ssl, KeyShareEntry* kse)
 			goto end;
 		}
 #endif
+#ifdef HAVE_FRODO
+	case(WOLFSSL_FRODO_SHAKE_LEVEL1):
+	case(WOLFSSL_FRODO_AES_LEVEL1):
+		if ((ret = crypto_kem_enc(ciphertext, sharedSecret, pubKey)) != 0){
+			goto end;
+		}
+#endif /* HAVE_FRODO */
+
+#ifdef HAVE_BIKE
+	case(WOLFSSL_BIKE_LEVEL1):
+	case(WOLFSSL_BIKE_LEVEL3):
+		if ((ret = crypto_kem_enc(ciphertext, sharedSecret, pubKey)) != 0){
+			goto end;
+		}
+#endif
+#ifdef HAVE_SIKE
+	case(WOLFSSL_SIKE_LEVEL1_1):
+	case(WOLFSSL_SIKE_LEVEL1_2):
+	case(WOLFSSL_SIKE_LEVEL3):
+	case(WOLFSSL_SIKE_LEVEL5):
+		if ((ret = crypto_kem_enc(ciphertext, sharedSecret, pubKey)) != 0){
+			goto end;
+		}
+#endif
+#ifdef HAVE_HQC
+	case(WOLFSSL_HQC_LEVEL1):
+	case(WOLFSSL_HQC_LEVEL3):
+	case(WOLFSSL_HQC_LEVEL5):
+		if ((ret = crypto_kem_enc(ciphertext, sharedSecret, pubKey)) != 0){
+			goto end;
+		}
+#endif
+#ifdef HAVE_NTRULPR
+	case(WOLFSSL_NTRULPR_LEVEL1_1):
+	case(WOLFSSL_NTRULPR_LEVEL1_2):
+	case(WOLFSSL_NTRULPR_LEVEL3):
+	case(WOLFSSL_NTRULPR_LEVEL5):
+		if ((ret = crypto_kem_enc(ciphertext, sharedSecret, pubKey)) != 0){
+			goto end;
+		}
+#endif
+#ifdef HAVE_NTRU_PQM4
+	case(WOLFSSL_NTRU_PQM4_LEVEL1):
+	case(WOLFSSL_NTRU_PQM4_LEVEL3):
+	case(WOLFSSL_NTRU_PQM4_LEVEL5):
+		if ((ret = crypto_kem_enc(ciphertext, sharedSecret, pubKey)) != 0){
+			goto end;
+		}
+#endif
+
 	}
 
 	/* Mapping Ciphertext to KeyShareEntry's Public key and Shared Secret to KeyShareEntry's Private key
@@ -7291,6 +7410,104 @@ static int TLSX_KeyShare_GenKey(WOLFSSL *ssl, KeyShareEntry *kse)
 		if (kse->group == WOLFSSL_SABER_LEVEL5 && ssl->options.side == WOLFSSL_SERVER_END)
 			return TLSX_KeyShare_GenPQEncaps(ssl, kse);
 	#endif
+	#ifdef HAVE_FRODO
+		if (kse->group == WOLFSSL_FRODO_SHAKE_LEVEL1 && ssl->options.side == WOLFSSL_CLIENT_END)
+			return TLSX_KeyShare_GenPQKey(ssl, kse);
+		if (kse->group == WOLFSSL_FRODO_SHAKE_LEVEL1 && ssl->options.side == WOLFSSL_SERVER_END)
+			return TLSX_KeyShare_GenPQEncaps(ssl, kse);
+
+		if (kse->group == WOLFSSL_FRODO_AES_LEVEL1 && ssl->options.side == WOLFSSL_CLIENT_END)
+			return TLSX_KeyShare_GenPQKey(ssl, kse);
+		if (kse->group == WOLFSSL_FRODO_AES_LEVEL1 && ssl->options.side == WOLFSSL_SERVER_END)
+			return TLSX_KeyShare_GenPQEncaps(ssl, kse);
+	#endif /* HAVE_FRODO */
+
+	#ifdef HAVE_BIKE
+		if (kse->group == WOLFSSL_BIKE_LEVEL1 && ssl->options.side == WOLFSSL_CLIENT_END)
+			return TLSX_KeyShare_GenPQKey(ssl, kse);
+		if (kse->group == WOLFSSL_BIKE_LEVEL1 && ssl->options.side == WOLFSSL_SERVER_END)
+			return TLSX_KeyShare_GenPQEncaps(ssl, kse);
+
+		if (kse->group == WOLFSSL_BIKE_LEVEL3 && ssl->options.side == WOLFSSL_CLIENT_END)
+			return TLSX_KeyShare_GenPQKey(ssl, kse);
+		if (kse->group == WOLFSSL_BIKE_LEVEL3 && ssl->options.side == WOLFSSL_SERVER_END)
+			return TLSX_KeyShare_GenPQEncaps(ssl, kse);
+	#endif
+	#ifdef HAVE_SIKE
+		if (kse->group == WOLFSSL_SIKE_LEVEL1_1 && ssl->options.side == WOLFSSL_CLIENT_END)
+			return TLSX_KeyShare_GenPQKey(ssl, kse);
+		if (kse->group == WOLFSSL_SIKE_LEVEL1_1 && ssl->options.side == WOLFSSL_SERVER_END)
+			return TLSX_KeyShare_GenPQEncaps(ssl, kse);
+
+		if (kse->group == WOLFSSL_SIKE_LEVEL1_2 && ssl->options.side == WOLFSSL_CLIENT_END)
+			return TLSX_KeyShare_GenPQKey(ssl, kse);
+		if (kse->group == WOLFSSL_SIKE_LEVEL1_2 && ssl->options.side == WOLFSSL_SERVER_END)
+			return TLSX_KeyShare_GenPQEncaps(ssl, kse);
+
+		if (kse->group == WOLFSSL_SIKE_LEVEL3 && ssl->options.side == WOLFSSL_CLIENT_END)
+			return TLSX_KeyShare_GenPQKey(ssl, kse);
+		if (kse->group == WOLFSSL_SIKE_LEVEL3 && ssl->options.side == WOLFSSL_SERVER_END)
+			return TLSX_KeyShare_GenPQEncaps(ssl, kse);
+
+		if (kse->group == WOLFSSL_SIKE_LEVEL5 && ssl->options.side == WOLFSSL_CLIENT_END)
+			return TLSX_KeyShare_GenPQKey(ssl, kse);
+		if (kse->group == WOLFSSL_SIKE_LEVEL5 && ssl->options.side == WOLFSSL_SERVER_END)
+			return TLSX_KeyShare_GenPQEncaps(ssl, kse);
+	#endif
+	#ifdef HAVE_HQC
+		if (kse->group == WOLFSSL_HQC_LEVEL1 && ssl->options.side == WOLFSSL_CLIENT_END)
+			return TLSX_KeyShare_GenPQKey(ssl, kse);
+		if (kse->group == WOLFSSL_HQC_LEVEL1 && ssl->options.side == WOLFSSL_SERVER_END)
+			return TLSX_KeyShare_GenPQEncaps(ssl, kse);
+
+		if (kse->group == WOLFSSL_HQC_LEVEL3 && ssl->options.side == WOLFSSL_CLIENT_END)
+			return TLSX_KeyShare_GenPQKey(ssl, kse);
+		if (kse->group == WOLFSSL_HQC_LEVEL3 && ssl->options.side == WOLFSSL_SERVER_END)
+			return TLSX_KeyShare_GenPQEncaps(ssl, kse);
+
+		if (kse->group == WOLFSSL_HQC_LEVEL5 && ssl->options.side == WOLFSSL_CLIENT_END)
+			return TLSX_KeyShare_GenPQKey(ssl, kse);
+		if (kse->group == WOLFSSL_HQC_LEVEL5 && ssl->options.side == WOLFSSL_SERVER_END)
+			return TLSX_KeyShare_GenPQEncaps(ssl, kse);
+	#endif
+	#ifdef HAVE_NTRULPR
+		if (kse->group == WOLFSSL_NTRULPR_LEVEL1_1 && ssl->options.side == WOLFSSL_CLIENT_END)
+			return TLSX_KeyShare_GenPQKey(ssl, kse);
+		if (kse->group == WOLFSSL_NTRULPR_LEVEL1_1 && ssl->options.side == WOLFSSL_SERVER_END)
+			return TLSX_KeyShare_GenPQEncaps(ssl, kse);
+
+		if (kse->group == WOLFSSL_NTRULPR_LEVEL1_2 && ssl->options.side == WOLFSSL_CLIENT_END)
+			return TLSX_KeyShare_GenPQKey(ssl, kse);
+		if (kse->group == WOLFSSL_NTRULPR_LEVEL1_2 && ssl->options.side == WOLFSSL_SERVER_END)
+			return TLSX_KeyShare_GenPQEncaps(ssl, kse);
+
+		if (kse->group == WOLFSSL_NTRULPR_LEVEL3 && ssl->options.side == WOLFSSL_CLIENT_END)
+			return TLSX_KeyShare_GenPQKey(ssl, kse);
+		if (kse->group == WOLFSSL_NTRULPR_LEVEL3 && ssl->options.side == WOLFSSL_SERVER_END)
+			return TLSX_KeyShare_GenPQEncaps(ssl, kse);
+
+		if (kse->group == WOLFSSL_NTRULPR_LEVEL5 && ssl->options.side == WOLFSSL_CLIENT_END)
+			return TLSX_KeyShare_GenPQKey(ssl, kse);
+		if (kse->group == WOLFSSL_NTRULPR_LEVEL5 && ssl->options.side == WOLFSSL_SERVER_END)
+			return TLSX_KeyShare_GenPQEncaps(ssl, kse);
+	#endif
+	#ifdef HAVE_NTRU_PQM4
+		if (kse->group == WOLFSSL_NTRU_PQM4_LEVEL1 && ssl->options.side == WOLFSSL_CLIENT_END)
+			return TLSX_KeyShare_GenPQKey(ssl, kse);
+		if (kse->group == WOLFSSL_NTRU_PQM4_LEVEL1 && ssl->options.side == WOLFSSL_SERVER_END)
+			return TLSX_KeyShare_GenPQEncaps(ssl, kse);
+
+		if (kse->group == WOLFSSL_NTRU_PQM4_LEVEL3 && ssl->options.side == WOLFSSL_CLIENT_END)
+			return TLSX_KeyShare_GenPQKey(ssl, kse);
+		if (kse->group == WOLFSSL_NTRU_PQM4_LEVEL3 && ssl->options.side == WOLFSSL_SERVER_END)
+			return TLSX_KeyShare_GenPQEncaps(ssl, kse);
+
+		if (kse->group == WOLFSSL_NTRU_PQM4_LEVEL5 && ssl->options.side == WOLFSSL_CLIENT_END)
+			return TLSX_KeyShare_GenPQKey(ssl, kse);
+		if (kse->group == WOLFSSL_NTRU_PQM4_LEVEL5 && ssl->options.side == WOLFSSL_SERVER_END)
+			return TLSX_KeyShare_GenPQEncaps(ssl, kse);
+	#endif
+
 #endif /* HAVE_POSTQUANTUM */
     /* Named FFHE groups have a bit set to identify them. */
     if ((kse->group & NAMED_DH_MASK) == NAMED_DH_MASK)
@@ -7354,6 +7571,98 @@ static void TLSX_KeyShare_FreeAll(KeyShareEntry* list, void* heap)
 				current->key = NULL;
 			}
 	#endif
+	#ifdef HAVE_FRODO
+			else if (current->group == WOLFSSL_FRODO_SHAKE_LEVEL1){
+				XFREE(current->key, heap, DYNAMIC_TYPE_PRIVATE_KEY);
+				current->key = NULL;
+			}
+			else if (current->group == WOLFSSL_FRODO_AES_LEVEL1){
+				XFREE(current->key, heap, DYNAMIC_TYPE_PRIVATE_KEY);
+				current->key = NULL;
+			}
+	#endif /* HAVE_FRODO */
+
+	#ifdef HAVE_BIKE
+			else if (current->group == WOLFSSL_BIKE_LEVEL1){
+				XFREE(current->key, heap, DYNAMIC_TYPE_PRIVATE_KEY);
+				current->key = NULL;
+			}
+			else if (current->group == WOLFSSL_BIKE_LEVEL3){
+				XFREE(current->key, heap, DYNAMIC_TYPE_PRIVATE_KEY);
+				current->key = NULL;
+			}
+
+	#endif
+	#ifdef HAVE_SIKE
+			else if (current->group == WOLFSSL_SIKE_LEVEL1_1){
+				XFREE(current->key, heap, DYNAMIC_TYPE_PRIVATE_KEY);
+				current->key = NULL;
+			}
+			else if (current->group == WOLFSSL_SIKE_LEVEL1_2){
+				XFREE(current->key, heap, DYNAMIC_TYPE_PRIVATE_KEY);
+				current->key = NULL;
+			}
+			else if (current->group == WOLFSSL_SIKE_LEVEL3) {
+				XFREE(current->key, heap, DYNAMIC_TYPE_PRIVATE_KEY);
+				current->key = NULL;
+			}
+			else if (current->group == WOLFSSL_SIKE_LEVEL5) {
+				XFREE(current->key, heap, DYNAMIC_TYPE_PRIVATE_KEY);
+				current->key = NULL;
+			}
+
+	#endif
+	#ifdef HAVE_HQC
+			else if (current->group == WOLFSSL_HQC_LEVEL1){
+				XFREE(current->key, heap, DYNAMIC_TYPE_PRIVATE_KEY);
+				current->key = NULL;
+			}
+			else if (current->group == WOLFSSL_HQC_LEVEL3){
+				XFREE(current->key, heap, DYNAMIC_TYPE_PRIVATE_KEY);
+				current->key = NULL;
+			}
+			else if (current->group == WOLFSSL_HQC_LEVEL5) {
+				XFREE(current->key, heap, DYNAMIC_TYPE_PRIVATE_KEY);
+				current->key = NULL;
+			}
+
+	#endif
+	#ifdef HAVE_NTRULPR
+			else if (current->group == WOLFSSL_NTRULPR_LEVEL1_1){
+				XFREE(current->key, heap, DYNAMIC_TYPE_PRIVATE_KEY);
+				current->key = NULL;
+			}
+			else if (current->group == WOLFSSL_NTRULPR_LEVEL1_2){
+				XFREE(current->key, heap, DYNAMIC_TYPE_PRIVATE_KEY);
+				current->key = NULL;
+			}
+			else if (current->group == WOLFSSL_NTRULPR_LEVEL3) {
+				XFREE(current->key, heap, DYNAMIC_TYPE_PRIVATE_KEY);
+				current->key = NULL;
+			}
+			else if (current->group == WOLFSSL_NTRULPR_LEVEL5) {
+				XFREE(current->key, heap, DYNAMIC_TYPE_PRIVATE_KEY);
+				current->key = NULL;
+			}
+
+	#endif
+	#ifdef HAVE_NTRU_PQM4
+			else if (current->group == WOLFSSL_NTRU_PQM4_LEVEL1){
+				XFREE(current->key, heap, DYNAMIC_TYPE_PRIVATE_KEY);
+				current->key = NULL;
+			}
+			else if (current->group == WOLFSSL_NTRU_PQM4_LEVEL3){
+				XFREE(current->key, heap, DYNAMIC_TYPE_PRIVATE_KEY);
+				current->key = NULL;
+			}
+			else if (current->group == WOLFSSL_NTRU_PQM4_LEVEL5) {
+				XFREE(current->key, heap, DYNAMIC_TYPE_PRIVATE_KEY);
+				current->key = NULL;
+			}
+
+	#endif
+
+
 #endif /* HAVE_POSTQUANTUM */
 
 
@@ -7930,6 +8239,56 @@ static int TLSX_KeyShare_ProcessPQClient(WOLFSSL* ssl, KeyShareEntry* kse)
 				goto end;
 			}
 #endif
+#ifdef HAVE_FRODO
+		case(WOLFSSL_FRODO_SHAKE_LEVEL1):
+		case(WOLFSSL_FRODO_AES_LEVEL1):
+			if ((ret = crypto_kem_dec(sharedSecret, ciphertext, privateKey)) != 0){
+				goto end;
+			}
+#endif /* HAVE_FRODO */
+
+#ifdef HAVE_BIKE
+		case(WOLFSSL_BIKE_LEVEL1):
+		case(WOLFSSL_BIKE_LEVEL3):
+			if ((ret = crypto_kem_dec(sharedSecret, ciphertext, privateKey)) != 0){
+				goto end;
+			}
+#endif
+#ifdef HAVE_SIKE
+		case(WOLFSSL_SIKE_LEVEL1_1):
+		case(WOLFSSL_SIKE_LEVEL1_2):
+		case(WOLFSSL_SIKE_LEVEL3):
+		case(WOLFSSL_SIKE_LEVEL5):
+			if ((ret = crypto_kem_dec(sharedSecret, ciphertext, privateKey)) != 0){
+				goto end;
+			}
+#endif
+#ifdef HAVE_HQC
+		case(WOLFSSL_HQC_LEVEL1):
+		case(WOLFSSL_HQC_LEVEL3):
+		case(WOLFSSL_HQC_LEVEL5):
+			if ((ret = crypto_kem_dec(sharedSecret, ciphertext, privateKey)) != 0){
+				goto end;
+			}
+#endif
+#ifdef HAVE_NTRULPR
+		case(WOLFSSL_NTRULPR_LEVEL1_1):
+		case(WOLFSSL_NTRULPR_LEVEL1_2):
+		case(WOLFSSL_NTRULPR_LEVEL3):
+		case(WOLFSSL_NTRULPR_LEVEL5):
+			if ((ret = crypto_kem_dec(sharedSecret, ciphertext, privateKey)) != 0){
+				goto end;
+			}
+#endif
+#ifdef HAVE_NTRU_PQM4
+		case(WOLFSSL_NTRU_PQM4_LEVEL1):
+		case(WOLFSSL_NTRU_PQM4_LEVEL3):
+		case(WOLFSSL_NTRU_PQM4_LEVEL5):
+			if ((ret = crypto_kem_dec(sharedSecret, ciphertext, privateKey)) != 0){
+				goto end;
+			}
+#endif
+
 	}
 
 
@@ -8001,6 +8360,111 @@ static int TLSX_KeyShare_Process(WOLFSSL* ssl, KeyShareEntry* keyShareEntry)
 		return ret;
 
 	#endif
+	#ifdef HAVE_FRODO
+		if (keyShareEntry->group == WOLFSSL_FRODO_SHAKE_LEVEL1 && ssl->options.side == WOLFSSL_SERVER_END)
+			ret = TLSX_KeyShare_ProcessPQServer(ssl, keyShareEntry);
+		if (keyShareEntry->group == WOLFSSL_FRODO_SHAKE_LEVEL1 && ssl->options.side == WOLFSSL_CLIENT_END)
+			ret = TLSX_KeyShare_ProcessPQClient(ssl, keyShareEntry);
+
+		if (keyShareEntry->group == WOLFSSL_FRODO_AES_LEVEL1 && ssl->options.side == WOLFSSL_SERVER_END)
+			ret = TLSX_KeyShare_ProcessPQServer(ssl, keyShareEntry);
+		if (keyShareEntry->group == WOLFSSL_FRODO_AES_LEVEL1 && ssl->options.side == WOLFSSL_CLIENT_END)
+			ret = TLSX_KeyShare_ProcessPQClient(ssl, keyShareEntry);
+		return ret;
+	#endif /* HAVE_FRODO */
+
+	#ifdef HAVE_BIKE
+		if (keyShareEntry->group == WOLFSSL_BIKE_LEVEL1 && ssl->options.side == WOLFSSL_SERVER_END)
+			ret = TLSX_KeyShare_ProcessPQServer(ssl, keyShareEntry);
+		if (keyShareEntry->group == WOLFSSL_BIKE_LEVEL1 && ssl->options.side == WOLFSSL_CLIENT_END)
+			ret = TLSX_KeyShare_ProcessPQClient(ssl, keyShareEntry);
+
+		if (keyShareEntry->group == WOLFSSL_BIKE_LEVEL3 && ssl->options.side == WOLFSSL_SERVER_END)
+			ret = TLSX_KeyShare_ProcessPQServer(ssl, keyShareEntry);
+		if (keyShareEntry->group == WOLFSSL_BIKE_LEVEL3 && ssl->options.side == WOLFSSL_CLIENT_END)
+			ret = TLSX_KeyShare_ProcessPQClient(ssl, keyShareEntry);
+		return ret;
+	#endif
+	#ifdef HAVE_SIKE
+		if (keyShareEntry->group == WOLFSSL_SIKE_LEVEL1_1 && ssl->options.side == WOLFSSL_SERVER_END)
+			ret = TLSX_KeyShare_ProcessPQServer(ssl, keyShareEntry);
+		if (keyShareEntry->group == WOLFSSL_SIKE_LEVEL1_1 && ssl->options.side == WOLFSSL_CLIENT_END)
+			ret = TLSX_KeyShare_ProcessPQClient(ssl, keyShareEntry);
+
+		if (keyShareEntry->group == WOLFSSL_SIKE_LEVEL1_2 && ssl->options.side == WOLFSSL_SERVER_END)
+			ret = TLSX_KeyShare_ProcessPQServer(ssl, keyShareEntry);
+		if (keyShareEntry->group == WOLFSSL_SIKE_LEVEL1_2 && ssl->options.side == WOLFSSL_CLIENT_END)
+			ret = TLSX_KeyShare_ProcessPQClient(ssl, keyShareEntry);
+
+		if (keyShareEntry->group == WOLFSSL_SIKE_LEVEL3 && ssl->options.side == WOLFSSL_SERVER_END)
+			ret = TLSX_KeyShare_ProcessPQServer(ssl, keyShareEntry);
+		if (keyShareEntry->group == WOLFSSL_SIKE_LEVEL3 && ssl->options.side == WOLFSSL_CLIENT_END)
+			ret = TLSX_KeyShare_ProcessPQClient(ssl, keyShareEntry);
+
+		if (keyShareEntry->group == WOLFSSL_SIKE_LEVEL5 && ssl->options.side == WOLFSSL_SERVER_END)
+			ret = TLSX_KeyShare_ProcessPQServer(ssl, keyShareEntry);
+		if (keyShareEntry->group == WOLFSSL_SIKE_LEVEL5 && ssl->options.side == WOLFSSL_CLIENT_END)
+			ret = TLSX_KeyShare_ProcessPQClient(ssl, keyShareEntry);
+		return ret;
+	#endif
+	#ifdef HAVE_HQC
+		if (keyShareEntry->group == WOLFSSL_HQC_LEVEL1 && ssl->options.side == WOLFSSL_SERVER_END)
+			ret = TLSX_KeyShare_ProcessPQServer(ssl, keyShareEntry);
+		if (keyShareEntry->group == WOLFSSL_HQC_LEVEL1 && ssl->options.side == WOLFSSL_CLIENT_END)
+			ret = TLSX_KeyShare_ProcessPQClient(ssl, keyShareEntry);
+
+		if (keyShareEntry->group == WOLFSSL_HQC_LEVEL3 && ssl->options.side == WOLFSSL_SERVER_END)
+			ret = TLSX_KeyShare_ProcessPQServer(ssl, keyShareEntry);
+		if (keyShareEntry->group == WOLFSSL_HQC_LEVEL3 && ssl->options.side == WOLFSSL_CLIENT_END)
+			ret = TLSX_KeyShare_ProcessPQClient(ssl, keyShareEntry);
+
+		if (keyShareEntry->group == WOLFSSL_HQC_LEVEL5 && ssl->options.side == WOLFSSL_SERVER_END)
+			ret = TLSX_KeyShare_ProcessPQServer(ssl, keyShareEntry);
+		if (keyShareEntry->group == WOLFSSL_HQC_LEVEL5 && ssl->options.side == WOLFSSL_CLIENT_END)
+			ret = TLSX_KeyShare_ProcessPQClient(ssl, keyShareEntry);
+		return ret;
+	#endif
+	#ifdef HAVE_NTRULPR
+		if (keyShareEntry->group == WOLFSSL_NTRULPR_LEVEL1_1 && ssl->options.side == WOLFSSL_SERVER_END)
+			ret = TLSX_KeyShare_ProcessPQServer(ssl, keyShareEntry);
+		if (keyShareEntry->group == WOLFSSL_NTRULPR_LEVEL1_1 && ssl->options.side == WOLFSSL_CLIENT_END)
+			ret = TLSX_KeyShare_ProcessPQClient(ssl, keyShareEntry);
+
+		if (keyShareEntry->group == WOLFSSL_NTRULPR_LEVEL1_2 && ssl->options.side == WOLFSSL_SERVER_END)
+			ret = TLSX_KeyShare_ProcessPQServer(ssl, keyShareEntry);
+		if (keyShareEntry->group == WOLFSSL_NTRULPR_LEVEL1_2 && ssl->options.side == WOLFSSL_CLIENT_END)
+			ret = TLSX_KeyShare_ProcessPQClient(ssl, keyShareEntry);
+
+		if (keyShareEntry->group == WOLFSSL_NTRULPR_LEVEL3 && ssl->options.side == WOLFSSL_SERVER_END)
+			ret = TLSX_KeyShare_ProcessPQServer(ssl, keyShareEntry);
+		if (keyShareEntry->group == WOLFSSL_NTRULPR_LEVEL3 && ssl->options.side == WOLFSSL_CLIENT_END)
+			ret = TLSX_KeyShare_ProcessPQClient(ssl, keyShareEntry);
+
+		if (keyShareEntry->group == WOLFSSL_NTRULPR_LEVEL5 && ssl->options.side == WOLFSSL_SERVER_END)
+			ret = TLSX_KeyShare_ProcessPQServer(ssl, keyShareEntry);
+		if (keyShareEntry->group == WOLFSSL_NTRULPR_LEVEL5 && ssl->options.side == WOLFSSL_CLIENT_END)
+			ret = TLSX_KeyShare_ProcessPQClient(ssl, keyShareEntry);
+		return ret;
+	#endif
+	#ifdef HAVE_NTRU_PQM4
+		if (keyShareEntry->group == WOLFSSL_NTRU_PQM4_LEVEL1 && ssl->options.side == WOLFSSL_SERVER_END)
+			ret = TLSX_KeyShare_ProcessPQServer(ssl, keyShareEntry);
+		if (keyShareEntry->group == WOLFSSL_NTRU_PQM4_LEVEL1 && ssl->options.side == WOLFSSL_CLIENT_END)
+			ret = TLSX_KeyShare_ProcessPQClient(ssl, keyShareEntry);
+
+		if (keyShareEntry->group == WOLFSSL_NTRU_PQM4_LEVEL3 && ssl->options.side == WOLFSSL_SERVER_END)
+			ret = TLSX_KeyShare_ProcessPQServer(ssl, keyShareEntry);
+		if (keyShareEntry->group == WOLFSSL_NTRU_PQM4_LEVEL3 && ssl->options.side == WOLFSSL_CLIENT_END)
+			ret = TLSX_KeyShare_ProcessPQClient(ssl, keyShareEntry);
+
+		if (keyShareEntry->group == WOLFSSL_NTRU_PQM4_LEVEL5 && ssl->options.side == WOLFSSL_SERVER_END)
+			ret = TLSX_KeyShare_ProcessPQServer(ssl, keyShareEntry);
+		if (keyShareEntry->group == WOLFSSL_NTRU_PQM4_LEVEL5 && ssl->options.side == WOLFSSL_CLIENT_END)
+			ret = TLSX_KeyShare_ProcessPQClient(ssl, keyShareEntry);
+		return ret;
+	#endif
+
+
 #endif /* HAVE_POSTQUANTUM */
 
 #if defined(HAVE_SESSION_TICKET) || !defined(NO_PSK)
@@ -8398,6 +8862,46 @@ static int TLSX_KeyShare_IsSupported(int namedGroup)
     	case WOLFSSL_SABER_LEVEL5:
     		break;
 	#endif
+	#ifdef HAVE_FRODO
+    	case WOLFSSL_FRODO_SHAKE_LEVEL1:
+    		break;
+    	case WOLFSSL_FRODO_AES_LEVEL1:
+    		break;
+	#endif /* HAVE_FRODO */
+
+	#ifdef HAVE_BIKE
+		case(WOLFSSL_BIKE_LEVEL1):
+		case(WOLFSSL_BIKE_LEVEL3):
+			break;
+	#endif
+	#ifdef HAVE_SIKE
+		case(WOLFSSL_SIKE_LEVEL1_1):
+		case(WOLFSSL_SIKE_LEVEL1_2):
+		case(WOLFSSL_SIKE_LEVEL3):
+		case(WOLFSSL_SIKE_LEVEL5):
+			break;
+	#endif
+	#ifdef HAVE_HQC
+		case(WOLFSSL_HQC_LEVEL1):
+		case(WOLFSSL_HQC_LEVEL3):
+		case(WOLFSSL_HQC_LEVEL5):
+			break;
+	#endif
+	#ifdef HAVE_NTRULPR
+		case(WOLFSSL_NTRULPR_LEVEL1_1):
+		case(WOLFSSL_NTRULPR_LEVEL1_2):
+		case(WOLFSSL_NTRULPR_LEVEL3):
+		case(WOLFSSL_NTRULPR_LEVEL5):
+			break;
+	#endif
+	#ifdef HAVE_NTRU_PQM4
+		case(WOLFSSL_NTRU_PQM4_LEVEL1):
+		case(WOLFSSL_NTRU_PQM4_LEVEL3):
+		case(WOLFSSL_NTRU_PQM4_LEVEL5):
+			break;
+	#endif
+
+
 #endif /* HAVE_POSTQUANTUM */
 
     #ifdef HAVE_FFDHE_2048
@@ -8478,6 +8982,38 @@ static int TLSX_KeyShare_GroupRank(WOLFSSL* ssl, int group)
     	ssl->group[ssl->numGroups++] = WOLFSSL_SABER_LEVEL3;
     	ssl->group[ssl->numGroups++] = WOLFSSL_SABER_LEVEL5;
 	#endif
+	#ifdef HAVE_FRODO
+    	ssl->group[ssl->numGroups++] = WOLFSSL_FRODO_SHAKE_LEVEL1;
+    	ssl->group[ssl->numGroups++] = WOLFSSL_FRODO_AES_LEVEL1;
+	#endif /* HAVE_FRODO */
+
+	#ifdef HAVE_BIKE
+    	ssl->group[ssl->numGroups++] = WOLFSSL_BIKE_LEVEL1;
+    	ssl->group[ssl->numGroups++] = WOLFSSL_BIKE_LEVEL3;
+    #endif
+	#ifdef HAVE_SIKE
+    	ssl->group[ssl->numGroups++] = WOLFSSL_SIKE_LEVEL1_1;
+    	ssl->group[ssl->numGroups++] = WOLFSSL_SIKE_LEVEL1_2;
+    	ssl->group[ssl->numGroups++] = WOLFSSL_SIKE_LEVEL3;
+    	ssl->group[ssl->numGroups++] = WOLFSSL_SIKE_LEVEL5;
+    #endif
+	#ifdef HAVE_HQC
+    	ssl->group[ssl->numGroups++] = WOLFSSL_HQC_LEVEL1;
+    	ssl->group[ssl->numGroups++] = WOLFSSL_HQC_LEVEL3;
+    	ssl->group[ssl->numGroups++] = WOLFSSL_HQC_LEVEL5;
+    #endif
+	#ifdef HAVE_NTRULPR
+    	ssl->group[ssl->numGroups++] = WOLFSSL_NTRULPR_LEVEL1_1;
+    	ssl->group[ssl->numGroups++] = WOLFSSL_NTRULPR_LEVEL1_1;
+    	ssl->group[ssl->numGroups++] = WOLFSSL_NTRULPR_LEVEL3;
+    	ssl->group[ssl->numGroups++] = WOLFSSL_NTRULPR_LEVEL5;
+    #endif
+	#ifdef HAVE_NTRU_PQM4
+    	ssl->group[ssl->numGroups++] = WOLFSSL_NTRU_PQM4_LEVEL1;
+    	ssl->group[ssl->numGroups++] = WOLFSSL_NTRU_PQM4_LEVEL3;
+    	ssl->group[ssl->numGroups++] = WOLFSSL_NTRU_PQM4_LEVEL5;
+    #endif
+
 #endif /* HAVE_POSTQUANTUM */
 
 
@@ -10356,6 +10892,87 @@ static int TLSX_PopulateSupportedGroups(WOLFSSL* ssl, TLSX** extensions)
             if (ret != WOLFSSL_SUCCESS) return ret;
 		#endif /* SABER_SECURITY_LEVEL */
 	#endif /* HAVE_SABER */
+	#ifdef HAVE_FRODO
+
+                ret = TLSX_UseSupportedCurve(extensions,
+                                            WOLFSSL_FRODO_SHAKE_LEVEL1, ssl->heap);
+                if (ret != WOLFSSL_SUCCESS) return ret;
+
+                ret = TLSX_UseSupportedCurve(extensions,
+                                            WOLFSSL_FRODO_AES_LEVEL1, ssl->heap);
+                if (ret != WOLFSSL_SUCCESS) return ret;
+
+	#endif /* HAVE_FRODO */
+
+	#ifdef HAVE_BIKE
+                ret = TLSX_UseSupportedCurve(extensions,
+                		WOLFSSL_BIKE_LEVEL1, ssl->heap);
+                if (ret != WOLFSSL_SUCCESS) return ret;
+
+                ret = TLSX_UseSupportedCurve(extensions,
+                		WOLFSSL_BIKE_LEVEL3, ssl->heap);
+                if (ret != WOLFSSL_SUCCESS) return ret;
+    #endif
+	#ifdef HAVE_SIKE
+                ret = TLSX_UseSupportedCurve(extensions,
+                		WOLFSSL_SIKE_LEVEL1_1, ssl->heap);
+                if (ret != WOLFSSL_SUCCESS) return ret;
+
+                ret = TLSX_UseSupportedCurve(extensions,
+                		WOLFSSL_SIKE_LEVEL1_2, ssl->heap);
+                if (ret != WOLFSSL_SUCCESS) return ret;
+
+                ret = TLSX_UseSupportedCurve(extensions,
+                		WOLFSSL_SIKE_LEVEL3, ssl->heap);
+                if (ret != WOLFSSL_SUCCESS) return ret;
+
+                ret = TLSX_UseSupportedCurve(extensions,
+                		WOLFSSL_SIKE_LEVEL5, ssl->heap);
+                if (ret != WOLFSSL_SUCCESS) return ret;
+	#endif
+	#ifdef HAVE_HQC
+                ret = TLSX_UseSupportedCurve(extensions,
+                		WOLFSSL_HQC_LEVEL1, ssl->heap);
+                if (ret != WOLFSSL_SUCCESS) return ret;
+
+                ret = TLSX_UseSupportedCurve(extensions,
+                		WOLFSSL_HQC_LEVEL3, ssl->heap);
+                if (ret != WOLFSSL_SUCCESS) return ret;
+
+                ret = TLSX_UseSupportedCurve(extensions,
+                		WOLFSSL_HQC_LEVEL5, ssl->heap);
+                if (ret != WOLFSSL_SUCCESS) return ret;
+	#endif
+	#ifdef HAVE_NTRULPR
+                ret = TLSX_UseSupportedCurve(extensions,
+                		WOLFSSL_NTRULPR_LEVEL1_1, ssl->heap);
+                if (ret != WOLFSSL_SUCCESS) return ret;
+
+                ret = TLSX_UseSupportedCurve(extensions,
+                		WOLFSSL_NTRULPR_LEVEL1_2, ssl->heap);
+                if (ret != WOLFSSL_SUCCESS) return ret;
+
+                ret = TLSX_UseSupportedCurve(extensions,
+                		WOLFSSL_NTRULPR_LEVEL3, ssl->heap);
+                if (ret != WOLFSSL_SUCCESS) return ret;
+
+                ret = TLSX_UseSupportedCurve(extensions,
+                		WOLFSSL_NTRULPR_LEVEL5, ssl->heap);
+                if (ret != WOLFSSL_SUCCESS) return ret;
+	#endif
+	#ifdef HAVE_NTRU_PQM4
+                ret = TLSX_UseSupportedCurve(extensions,
+                		WOLFSSL_NTRU_PQM4_LEVEL1, ssl->heap);
+                if (ret != WOLFSSL_SUCCESS) return ret;
+
+                ret = TLSX_UseSupportedCurve(extensions,
+                		WOLFSSL_NTRU_PQM4_LEVEL3, ssl->heap);
+                if (ret != WOLFSSL_SUCCESS) return ret;
+
+                ret = TLSX_UseSupportedCurve(extensions,
+                		WOLFSSL_NTRU_PQM4_LEVEL5, ssl->heap);
+                if (ret != WOLFSSL_SUCCESS) return ret;
+	#endif
 
 #endif /* HAVE_POSTQUANTUM */
 
@@ -10763,30 +11380,68 @@ int TLSX_PopulateExtensions(WOLFSSL* ssl, byte isServer)
                     namedGroup = preferredGroup[0];
                 }
 
-                //		 BYPASS EVERYTHING AND CHOOSE THE POSTQUANTUM SUPPORTED GROUP
+    //		 BYPASS EVERYTHING AND CHOOSE THE POSTQUANTUM SUPPORTED GROUP
 
-            	#ifdef HAVE_POSTQUANTUM
-            		#ifdef HAVE_KYBER
-            			#if (KYBER_SECURITY_LEVEL == 1)
-            				namedGroup = WOLFSSL_KYBER_LEVEL1;
-            			#elif (KYBER_SECURITY_LEVEL == 3)
-            				namedGroup = WOLFSSL_KYBER_LEVEL3;
-            			#else /* KYBER_SECURITY_LEVEL == 5 */
-            				namedGroup = WOLFSSL_KYBER_LEVEL5;
-            			#endif
-            		#endif /* HAVE_KYBER */
+	#ifdef HAVE_POSTQUANTUM
+		#ifdef HAVE_KYBER
+			#if (KYBER_SECURITY_LEVEL == 1)
+				namedGroup = WOLFSSL_KYBER_LEVEL1;
+			#elif (KYBER_SECURITY_LEVEL == 3)
+				namedGroup = WOLFSSL_KYBER_LEVEL3;
+			#else /* KYBER_SECURITY_LEVEL == 5 */
+				namedGroup = WOLFSSL_KYBER_LEVEL5;
+			#endif
+		#endif /* HAVE_KYBER */
 
-            		#ifdef HAVE_SABER
-            			#if SABER_SECURITY_LEVEL == 1
-            				namedGroup = WOLFSSL_SABER_LEVEL1;
-            			#elif SABER_SECURITY_LEVEL == 3
-            				namedGroup = WOLFSSL_SABER_LEVEL3;
-            			#elif SABER_SECURITY_LEVEL == 5
-            				namedGroup = WOLFSSL_SABER_LEVEL5;
-            			#endif
-            		#endif /* HAVE_SABER */
+		#ifdef HAVE_SABER
+			#if SABER_SECURITY_LEVEL == 1
+				namedGroup = WOLFSSL_SABER_LEVEL1;
+			#elif SABER_SECURITY_LEVEL == 3
+				namedGroup = WOLFSSL_SABER_LEVEL3;
+			#elif SABER_SECURITY_LEVEL == 5
+				namedGroup = WOLFSSL_SABER_LEVEL5;
+			#endif
+		#endif /* HAVE_SABER */
 
-            	#endif /* HAVE_POSTQUANTUM */
+	#ifdef HAVE_FRODO
+				// Kapws na dialegw poio apta 2 tha bei
+				namedGroup = WOLFSSL_FRODO_SHAKE_LEVEL1;
+//				namedGroup = WOLFSSL_FRODO_AES_LEVEL1;
+	#endif /* HAVE_FRODO */
+
+	#ifdef HAVE_BIKE
+				// Kapws na dialegw poio apta 2 tha bei
+				namedGroup = WOLFSSL_BIKE_LEVEL1;
+//				namedGroup = WOLFSSL_BIKE_LEVEL3;
+	#endif
+	#ifdef HAVE_SIKE
+				// Kapws na dialegw poio apta 2 tha bei
+				namedGroup = WOLFSSL_SIKE_LEVEL1_1;
+//				namedGroup = WOLFSSL_SIKE_LEVEL1_2;
+//				namedGroup = WOLFSSL_SIKE_LEVEL3;
+//				namedGroup = WOLFSSL_SIKE_LEVEL5;
+	#endif
+	#ifdef HAVE_HQC
+				// Kapws na dialegw poio apta 2 tha bei
+				namedGroup = WOLFSSL_HQC_LEVEL1;
+//				namedGroup = WOLFSSL_HQC_LEVEL3;
+//				namedGroup = WOLFSSL_HQC_LEVEL5;
+	#endif
+	#ifdef HAVE_NTRULPR
+				// Kapws na dialegw poio apta 2 tha bei
+				namedGroup = WOLFSSL_NTRULPR_LEVEL1_1;
+//				namedGroup = WOLFSSL_NTRULPR_LEVEL1_1;
+//				namedGroup = WOLFSSL_NTRULPR_LEVEL3;
+//				namedGroup = WOLFSSL_NTRULPR_LEVEL5;
+	#endif
+	#ifdef HAVE_NTRU_PQM4
+				// Kapws na dialegw poio apta 2 tha bei
+				namedGroup = WOLFSSL_NTRU_PQM4_LEVEL1;
+//				namedGroup = WOLFSSL_NTRU_PQM4_LEVEL3;
+//				namedGroup = WOLFSSL_NTRU_PQM4_LEVEL5;
+	#endif
+
+	#endif /* HAVE_POSTQUANTUM */
 
 #ifndef HAVE_POSTQUANTUM
             	// Force curve SECP256R1 (or any other group) for benchmarking purposes

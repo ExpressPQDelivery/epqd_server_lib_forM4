@@ -8,6 +8,9 @@
 #include <unistd.h>
 #endif
 
+// Diko mou
+int PQCLEAN_randombytes(uint8_t *buf, size_t n);
+
 int randombytes(uint8_t *buf, size_t n);
 
 #endif

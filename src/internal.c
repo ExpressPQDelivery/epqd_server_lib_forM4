@@ -41,6 +41,12 @@
 	#ifdef HAVE_FALCON
 		#include <wolfcrypt/postquantum/falcon/api_falcon.h>
 	#endif
+	#ifdef HAVE_PICNIC
+		#include <wolfcrypt/postquantum/picnic/api_picnic.h>
+	#endif
+	#ifdef HAVE_SPHINCS
+		#include <wolfcrypt/postquantum/sphincs/api_sphincs.h>
+	#endif
 #endif /* HAVE_POSTQUANTUM */
 
 /*
@@ -2255,6 +2261,22 @@ void InitSuitesHashSigAlgo(Suites* suites, int haveECDSAsig, int haveRSAsig,
 						AddSuiteHashSigAlgo(suites, sha384_mac, falcon_level5_sa_algo, keySz, &idx);
 				#endif
 			#endif
+			#ifdef HAVE_PICNIC
+						AddSuiteHashSigAlgo(suites, sha384_mac, picnic3_level1_sa_algo, keySz, &idx);
+			#endif /* HAVE_PICNIC */
+
+			#ifdef HAVE_SPHINCS
+				#if SPHINCS_SECURITY_LEVEL==1
+					#ifdef SPHINCS_VARIANT_FAST
+						AddSuiteHashSigAlgo(suites, sha384_mac, sphincsfsimple_level1_sa_algo, keySz, &idx);
+					#else
+						AddSuiteHashSigAlgo(suites, sha384_mac, sphincsssimple_level1_sa_algo, keySz, &idx);
+					#endif /* SPHINCS_VARIANT */
+				#elif SPHINCS_SECURITY_LEVEL==3
+				#else
+				#endif /* SPHINCS_SECURITY_LEVEL */
+			#endif /* HAVE_SPHINCS */
+
 		#endif
 		#ifndef NO_SHA256
 			#ifdef HAVE_DILITHIUM
@@ -2273,6 +2295,22 @@ void InitSuitesHashSigAlgo(Suites* suites, int haveECDSAsig, int haveRSAsig,
 						AddSuiteHashSigAlgo(suites, sha256_mac, falcon_level5_sa_algo, keySz, &idx);
 				#endif
 			#endif
+			#ifdef HAVE_PICNIC
+						AddSuiteHashSigAlgo(suites, sha256_mac, picnic3_level1_sa_algo, keySz, &idx);
+			#endif /* HAVE_PICNIC */
+
+			#ifdef HAVE_SPHINCS
+				#if SPHINCS_SECURITY_LEVEL==1
+					#ifdef SPHINCS_VARIANT_FAST
+						AddSuiteHashSigAlgo(suites, sha256_mac, sphincsfsimple_level1_sa_algo, keySz, &idx);
+					#else
+						AddSuiteHashSigAlgo(suites, sha256_mac, sphincsssimple_level1_sa_algo, keySz, &idx);
+					#endif /* SPHINCS_VARIANT */
+				#elif SPHINCS_SECURITY_LEVEL==3
+				#else
+				#endif /* SPHINCS_SECURITY_LEVEL */
+			#endif /* HAVE_SPHINCS */
+
 		#endif
 	}
 #endif /* HAVE_POSTQUANTUM */
@@ -6469,7 +6507,9 @@ void SSL_ResourceFree(WOLFSSL* ssl)
     ssl->keepCert = 0; /* make sure certificate is free'd */
     wolfSSL_UnloadCertsKeys(ssl);
 #endif
+
 #ifdef HAVE_POSTQUANTUM
+
 	#ifdef HAVE_DILITHIUM
 		XFREE(ssl->peerDilithiumKey, ssl->heap, DYNAMIC_TYPE_PUBLIC_KEY);
 		ssl->peerDilithiumKeyPresent = 0;
@@ -6478,7 +6518,17 @@ void SSL_ResourceFree(WOLFSSL* ssl)
 		XFREE(ssl->peerFalconKey, ssl->heap, DYNAMIC_TYPE_PUBLIC_KEY);
 		ssl->peerFalconKeyPresent = 0;
 	#endif
+	#ifdef HAVE_PICNIC
+		XFREE(ssl->peerPicnic3Key, ssl->heap, DYNAMIC_TYPE_PUBLIC_KEY);
+		ssl->peerPicnic3KeyPresent = 0;
+	#endif /* HAVE_PICNIC */
+	#ifdef HAVE_SPHINCS
+		XFREE(ssl->peerSphincsKey, ssl->heap, DYNAMIC_TYPE_PUBLIC_KEY);
+		ssl->peerSphincsKeyPresent = 0;
+	#endif /* HAVE_SPHINCS */
+
 #endif /* HAVE_POSTQUANTUM */
+
 #ifndef NO_RSA
     FreeKey(ssl, DYNAMIC_TYPE_RSA, (void**)&ssl->peerRsaKey);
     ssl->peerRsaKeyPresent = 0;
@@ -6776,7 +6826,9 @@ void FreeHandshakeResources(WOLFSSL* ssl)
         FreeKey(ssl, DYNAMIC_TYPE_RSA, (void**)&ssl->peerRsaKey);
         ssl->peerRsaKeyPresent = 0;
 #endif
+
 #ifdef HAVE_POSTQUANTUM
+
 	#ifdef HAVE_DILITHIUM
         FreeKey(ssl, DYNAMIC_TYPE_PUBLIC_KEY, (void**)&ssl->peerDilithiumKey);
         ssl->peerDilithiumKeyPresent = 0;
@@ -6785,7 +6837,17 @@ void FreeHandshakeResources(WOLFSSL* ssl)
         FreeKey(ssl, DYNAMIC_TYPE_PUBLIC_KEY, (void**)&ssl->peerFalconKey);
         ssl->peerFalconKeyPresent = 0;
 	#endif
+	#ifdef HAVE_PICNIC
+		FreeKey(ssl, DYNAMIC_TYPE_PUBLIC_KEY, (void**)&ssl->peerPicnic3Key);
+		ssl->peerPicnic3KeyPresent = 0;
+	#endif /* HAVE_PICNIC */
+	#ifdef HAVE_SPHINCS
+		FreeKey(ssl, DYNAMIC_TYPE_PUBLIC_KEY, (void**)&ssl->peerSphincsKey);
+		ssl->peerSphincsKeyPresent = 0;
+	#endif /* HAVE_SPHINCS */
+
 #endif /* HAVE_POSTQUANTUM */
+
 #ifdef HAVE_ECC
         FreeKey(ssl, DYNAMIC_TYPE_ECC, (void**)&ssl->peerEccDsaKey);
         ssl->peerEccDsaKeyPresent = 0;
@@ -11718,6 +11780,41 @@ int ProcessPeerCerts(WOLFSSL* ssl, byte* input, word32* inOutIdx,
 					}
 
 		#endif
+		#ifdef HAVE_PICNIC
+					case PICNIC3_LEVEL1k:
+					{
+						byte* 	peerKey;
+
+						peerKey = (byte*)XMALLOC(args->dCert->pubKeySize, ssl->heap
+											, DYNAMIC_TYPE_PUBLIC_KEY);
+						if (peerKey != NULL){
+							XMEMCPY(peerKey, args->dCert->publicKey, args->dCert->pubKeySize);
+							ssl->peerPicnic3Key = peerKey;
+							ssl->peerPicnic3KeyPresent = 1;
+						}
+						break;
+					}
+		#endif /* HAVE_PICNIC */
+
+		#ifdef HAVE_SPHINCS
+					case SPHINCSFSIMPLE_LEVEL1k:
+					case SPHINCSSSIMPLE_LEVEL1k:
+					{
+						byte* 	peerKey;
+
+						peerKey = (byte*)XMALLOC(args->dCert->pubKeySize, ssl->heap
+											, DYNAMIC_TYPE_PUBLIC_KEY);
+						if (peerKey != NULL){
+							XMEMCPY(peerKey, args->dCert->publicKey, args->dCert->pubKeySize);
+							ssl->peerSphincsKey = peerKey;
+							ssl->peerSphincsKeyPresent = 1;
+						}
+						break;
+					}
+
+
+		#endif /* HAVE_SPHINCS */
+
 	#endif /* HAVE_POSTQUANTUM */
                 #ifndef NO_RSA
                     case RSAk:
@@ -20666,6 +20763,67 @@ int DecodePrivateKey(WOLFSSL *ssl, word16* length)
         }
     }
 	#endif
+	#ifdef HAVE_PICNIC
+
+	if (ssl->buffers.keyType == picnic3_level1_sa_algo || ssl->buffers.keyType == 0) {
+
+		ssl->hsType = DYNAMIC_TYPE_POSTQUANTUM;
+		ret = AllocKey(ssl, ssl->hsType, &ssl->hsKey);
+		if (ret != 0) {
+			goto exit_dpk;
+		}
+
+		WOLFSSL_MSG("Trying Picnic3 private key");
+
+		/* Set start of data to beginning of buffer. */
+		idx = 0;
+		/* Decode the key assuming it is a Dilithium private key. */
+		ret = wc_PQPrivateKeyDecode(ssl->buffers.key->buffer, &idx,
+					(byte*)ssl->hsKey, ssl->buffers.key->length);
+		if (ret == 0) {
+			WOLFSSL_MSG("Using Picnic private key");
+
+			/* Return the maximum private key length. */
+			keySz = CRYPTO_SECRETKEYBYTES;
+			*length = (word16)keySz;
+
+			goto exit_dpk;
+		}
+	}
+
+	#endif /* HAVE_PICNIC */
+
+	#ifdef HAVE_SPHINCS
+
+	if (ssl->buffers.keyType == sphincsfsimple_level1_sa_algo || ssl->buffers.keyType == sphincsssimple_level1_sa_algo || \
+			ssl->buffers.keyType == 0) {
+
+		ssl->hsType = DYNAMIC_TYPE_POSTQUANTUM;
+		ret = AllocKey(ssl, ssl->hsType, &ssl->hsKey);
+		if (ret != 0) {
+			goto exit_dpk;
+		}
+
+		WOLFSSL_MSG("Trying Sphincs private key");
+
+		/* Set start of data to beginning of buffer. */
+		idx = 0;
+		/* Decode the key assuming it is a Dilithium private key. */
+		ret = wc_PQPrivateKeyDecode(ssl->buffers.key->buffer, &idx,
+					(byte*)ssl->hsKey, ssl->buffers.key->length);
+		if (ret == 0) {
+			WOLFSSL_MSG("Using Sphincs private key");
+
+			/* Return the maximum private key length. */
+			keySz = CRYPTO_SECRETKEYBYTES;
+			*length = (word16)keySz;
+
+			goto exit_dpk;
+		}
+	}
+	#endif /* HAVE_SPHINCS */
+
+
 #endif /* HAVE_POSTQUANTUM */
 
 #ifndef NO_RSA

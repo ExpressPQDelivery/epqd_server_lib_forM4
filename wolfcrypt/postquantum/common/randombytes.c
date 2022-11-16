@@ -302,6 +302,11 @@ static int randombytes_js_randombytes_nodejs(void *buf, size_t n) {
 }
 #endif /* defined(__EMSCRIPTEN__) */
 
+// Diko mou
+int PQCLEAN_randombytes(uint8_t *buf, size_t n) {
+	return randombytes(buf, n);
+}
+
 int randombytes(uint8_t *buf, size_t n) {
     #if defined(__EMSCRIPTEN__)
     return randombytes_js_randombytes_nodejs(buf, n);

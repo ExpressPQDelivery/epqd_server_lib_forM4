@@ -78,6 +78,12 @@ ASN Options:
 	#ifdef HAVE_FALCON
 		#include <wolfcrypt/postquantum/falcon/api_falcon.h>
 	#endif
+	#ifdef HAVE_PICNIC
+		#include <wolfcrypt/postquantum/picnic/api_picnic.h>
+	#endif /* HAVE_PICNIC */
+	#ifdef HAVE_SPHINCS
+		#include <wolfcrypt/postquantum/sphincs/api_sphincs.h>
+	#endif /* HAVE_SPHINCS */
 #endif /* HAVE_POSTQUANTUM */
 
 #include <wolfssl/wolfcrypt/asn.h>
@@ -5330,6 +5336,13 @@ static int GetKey(DecodedCert* cert)
     case FALCON_LEVEL1k:
     case FALCON_LEVEL5k:
 #endif
+#ifdef HAVE_PICNIC
+    case PICNIC3_LEVEL1k:
+#endif
+#ifdef HAVE_SPHINCS
+    case SPHINCSFSIMPLE_LEVEL1k:
+    case SPHINCSSSIMPLE_LEVEL1k:
+#endif
     {
     	int ret;
 		byte* publicKey;
@@ -7243,6 +7256,7 @@ static int HashForSignature(const byte* buf, word32 bufSz, word32 sigOID,
     #ifndef NO_SHA256
 
 #ifdef HAVE_POSTQUANTUM
+
 	#ifdef HAVE_DILITHIUM
         case CTC_DILITHIUM_LEVEL1:
         case CTC_DILITHIUM_LEVEL3:
@@ -7258,6 +7272,21 @@ static int HashForSignature(const byte* buf, word32 bufSz, word32 sigOID,
         	break;
         }
 	#endif
+	#ifdef HAVE_PICNIC
+		case CTC_PICNIC3_LEVEL1:{
+			/* Hash is not performed here */
+			break;
+		}
+	#endif /* HAVE_PICNIC */
+	#ifdef HAVE_SPHINCS
+		case CTC_SPHINCSFSIMPLE_LEVEL1:
+		case CTC_SPHINCSSSIMPLE_LEVEL1:{
+			/* Hash is not performed here */
+			break;
+		}
+
+	#endif /* HAVE_SPHINCS */
+
 #endif /* HAVE_POSTQUANTUM */
 
         case CTC_SHA256wRSA:
@@ -7365,6 +7394,7 @@ static int ConfirmSignature(SignatureCtx* sigCtx,
             switch (keyOID) {
 
 #ifdef HAVE_POSTQUANTUM
+
 	#ifdef HAVE_DILITHIUM
 				case DILITHIUM_LEVEL5k:
 				case DILITHIUM_LEVEL3k:
@@ -7382,6 +7412,23 @@ static int ConfirmSignature(SignatureCtx* sigCtx,
 					break;
 				}
 	#endif
+	#ifdef HAVE_PICNIC
+				case PICNIC3_LEVEL1k:
+				{
+					/* key is decoded already, nothing to do here, break and fall through */
+					break;
+				}
+	#endif /* HAVE_PICNIC */
+	#ifdef HAVE_SPHINCS
+				case SPHINCSFSIMPLE_LEVEL1k:
+				case SPHINCSSSIMPLE_LEVEL1k:
+				{
+					/* key is decoded already, nothing to do here, break and fall through */
+					break;
+				}
+
+	#endif /* HAVE_SPHINCS */
+
 #endif /* HAVE_POSTQUANTUM */
 
             #ifndef NO_RSA
@@ -7580,6 +7627,7 @@ static int ConfirmSignature(SignatureCtx* sigCtx,
             switch (keyOID) {
 
 #ifdef HAVE_POSTQUANTUM
+
 	#ifdef HAVE_DILITHIUM
 				case DILITHIUM_LEVEL5k:
 				case DILITHIUM_LEVEL3k:
@@ -7599,6 +7647,44 @@ static int ConfirmSignature(SignatureCtx* sigCtx,
 	    			break;
 				}
 	#endif
+	#ifdef HAVE_PICNIC
+				case PICNIC3_LEVEL1k:
+				{
+					/* Verify the signature */
+					ret = picnic_crypto_sign_verify(sig, sigSz, buf, bufSz, key);
+
+					break;
+				}
+	#endif /* HAVE_PICNIC */
+	#ifdef HAVE_SPHINCS
+		#if SPHINCS_SECURITY_LEVEL==1
+			#ifdef SPHINCS_VARIANT_FAST
+
+				case SPHINCSFSIMPLE_LEVEL1k:
+				{
+					/* Verify the signature */
+					ret = PQCLEAN_SPHINCSSHA256128FSIMPLE_CLEAN_crypto_sign_verify(sig, sigSz, buf, bufSz, key);
+
+					break;
+				}
+
+			#else
+
+				case SPHINCSSSIMPLE_LEVEL1k:
+				{
+					/* Verify the signature */
+					ret = PQCLEAN_SPHINCSSHA256128SSIMPLE_CLEAN_crypto_sign_verify(sig, sigSz, buf, bufSz, key);
+
+					break;
+				}
+
+
+			#endif /* SPHINCS_VARIANT */
+		#elif SPHINCS_SECURITY_LEVEL==3
+		#else
+		#endif /* SPHINCS_SECURITY_LEVEL */
+	#endif /* HAVE_SPHINCS */
+
 #endif /* HAVE_POSTQUANTUM */
 
             #ifndef NO_RSA
@@ -7711,6 +7797,7 @@ static int ConfirmSignature(SignatureCtx* sigCtx,
             switch (keyOID) {
 
 #ifdef HAVE_POSTQUANTUM
+
 	#ifdef HAVE_DILITHIUM
 				case DILITHIUM_LEVEL5k:
 				case DILITHIUM_LEVEL3k:
@@ -7728,6 +7815,22 @@ static int ConfirmSignature(SignatureCtx* sigCtx,
 					break;
 				}
 	#endif
+	#ifdef HAVE_PICNIC
+				case PICNIC3_LEVEL1k:
+				{
+					/* nothing to do here, break and fall through */
+					break;
+				}
+	#endif /* HAVE_PICNIC */
+	#ifdef HAVE_SPHINCS
+				case SPHINCSFSIMPLE_LEVEL1k:
+				case SPHINCSSSIMPLE_LEVEL1k:
+				{
+					/* nothing to do here, break and fall through */
+					break;
+				}
+	#endif /* HAVE_SPHINCS */
+
 #endif /* HAVE_POSTQUANTUM */
 
             #ifndef NO_RSA

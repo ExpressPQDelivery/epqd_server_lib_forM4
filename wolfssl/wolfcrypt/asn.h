@@ -500,11 +500,17 @@ enum Key_Sum {
     DHk      = 647, /* dhKeyAgreement OID: 1.2.840.113549.1.3.1 */
 
 #ifdef HAVE_POSTQUANTUM			/*   PQ Public Keys OIDs   */
-	DILITHIUM_LEVEL1k 	= 213,	/* 1.3.6.1.4.1.2.267.7.4.4 */
-	DILITHIUM_LEVEL3k 	= 216, 	/* 1.3.6.1.4.1.2.267.7.6.5 */
-	DILITHIUM_LEVEL5k 	= 220, 	/* 1.3.6.1.4.1.2.267.7.8.7 */
-	FALCON_LEVEL1k 		= 268, 	/* 1.3.9999.3.1 */
-	FALCON_LEVEL5k 		= 271, 	/* 1.3.9999.3.4 */
+	DILITHIUM_LEVEL1k 		= 213,	/* 1.3.6.1.4.1.2.267.7.4.4 */
+	DILITHIUM_LEVEL3k 		= 216, 	/* 1.3.6.1.4.1.2.267.7.6.5 */
+	DILITHIUM_LEVEL5k 		= 220, 	/* 1.3.6.1.4.1.2.267.7.8.7 */
+	FALCON_LEVEL1k 			= 268, 	/* 1.3.9999.3.1 */
+	FALCON_LEVEL5k 			= 271, 	/* 1.3.9999.3.4 */
+	PICNIC3_LEVEL1k			= 353,  /* 1.3.6.1.4.1.311.89.2.1.21 */
+	SPHINCSFSIMPLE_LEVEL1k 	= 278, 	/* 1.3.9999.6.4.4 */
+	SPHINCSSSIMPLE_LEVEL1k 	= 284, 	/* 1.3.9999.6.4.10 */
+
+	//HAVE_DILITHIUM 	// for search purposes
+	//HAVE_FALCON
 #endif
 };
 
@@ -717,6 +723,14 @@ struct SignatureCtx {
 	#ifdef HAVE_FALCON
     	byte*	FalconPubKey;
     	word32	PubLen;
+	#endif
+	#ifdef HAVE_PICNIC
+		byte*	Picnic3PubKey;
+		word32	PubLen;
+	#endif
+	#ifdef HAVE_SPHINCS
+		byte*	SphincsPubKey;
+		word32	PubLen;
 	#endif
 #endif /* HAVE_POSTQUANTUM */
     #ifndef NO_RSA

@@ -1,0 +1,37 @@
+#ifndef PQCLEAN_NTRULPR761_CLEAN_API_H
+#define PQCLEAN_NTRULPR761_CLEAN_API_H
+
+#include <stdint.h>
+
+
+#define PQCLEAN_NTRULPR761_CLEAN_CRYPTO_ALGNAME "ntrulpr761"
+
+#define PQCLEAN_NTRULPR761_CLEAN_CRYPTO_SECRETKEYBYTES 1294
+#define PQCLEAN_NTRULPR761_CLEAN_CRYPTO_PUBLICKEYBYTES 1039
+#define PQCLEAN_NTRULPR761_CLEAN_CRYPTO_CIPHERTEXTBYTES 1167
+#define PQCLEAN_NTRULPR761_CLEAN_CRYPTO_BYTES 32
+
+/* -------------- DIKA MOU ------------------ */
+#undef CRYPTO_PUBLICKEYBYTES
+#undef CRYPTO_SECRETKEYBYTES
+#undef CRYPTO_BYTES
+
+#define CRYPTO_SECRETKEYBYTES  PQCLEAN_NTRULPR761_CLEAN_CRYPTO_SECRETKEYBYTES
+#define CRYPTO_PUBLICKEYBYTES  PQCLEAN_NTRULPR761_CLEAN_CRYPTO_PUBLICKEYBYTES
+#define CRYPTO_BYTES           PQCLEAN_NTRULPR761_CLEAN_CRYPTO_BYTES
+#define CRYPTO_CIPHERTEXTBYTES PQCLEAN_NTRULPR761_CLEAN_CRYPTO_CIPHERTEXTBYTES
+
+#define crypto_kem_keypair(pk,sk)			PQCLEAN_NTRULPR761_CLEAN_crypto_kem_keypair((pk),(sk))
+#define crypto_kem_enc(ct,ss,pk)			PQCLEAN_NTRULPR761_CLEAN_crypto_kem_enc(ct,ss,pk)
+#define crypto_kem_dec(ss,ct,sk)			PQCLEAN_NTRULPR761_CLEAN_crypto_kem_dec(ss,ct,sk)
+
+#define PQCLEAN_randombytes randombytes
+
+#define PQCLEAN_NTRULPR_CRYPTO_ALGNAME PQCLEAN_NTRULPR761_CLEAN_CRYPTO_ALGNAME
+
+/* -------------- DIKA MOU MEXRI EDW ------------------ */
+
+int PQCLEAN_NTRULPR761_CLEAN_crypto_kem_keypair(uint8_t *pk, uint8_t *sk);
+int PQCLEAN_NTRULPR761_CLEAN_crypto_kem_enc(uint8_t *c, uint8_t *k, const uint8_t *pk);
+int PQCLEAN_NTRULPR761_CLEAN_crypto_kem_dec(uint8_t *k, const uint8_t *c, const uint8_t *sk);
+#endif

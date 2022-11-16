@@ -82,6 +82,12 @@
 	#ifdef HAVE_FALCON
 		#include <wolfcrypt/postquantum/falcon/api_falcon.h>
 	#endif
+	#ifdef HAVE_PICNIC
+		#include <wolfcrypt/postquantum/picnic/api_picnic.h>
+	#endif /* HAVE_PICNIC */
+	#ifdef HAVE_SPHINCS
+		#include <wolfcrypt/postquantum/sphincs/api_sphincs.h>
+	#endif /* HAVE_SPHINCS */
 #endif /* HAVE_POSTQUANTUM */
 
 #ifndef NO_RSA
@@ -4684,6 +4690,7 @@ int AddCA(WOLFSSL_CERT_MANAGER* cm, DerBuffer** pDer, int type, int verify)
         switch (cert->keyOID) {
 
 #ifdef HAVE_POSTQUANTUM
+
 	#ifdef HAVE_DILITHIUM
         case DILITHIUM_LEVEL5k:
         case DILITHIUM_LEVEL3k:
@@ -4703,6 +4710,24 @@ int AddCA(WOLFSSL_CERT_MANAGER* cm, DerBuffer** pDer, int type, int verify)
         	}
         	break;
 	#endif
+	#ifdef HAVE_PICNIC
+		case PICNIC3_LEVEL1k:
+			if (cert->pubKeySize != CRYPTO_PUBLICKEYBYTES){
+				ret = RSA_KEY_SIZE_E;
+				WOLFSSL_MSG("\tCA Picnic key size error");
+			}
+			break;
+	#endif /* HAVE_PICNIC */
+	#ifdef HAVE_SPHINCS
+		case SPHINCSFSIMPLE_LEVEL1k:
+		case SPHINCSSSIMPLE_LEVEL1k:
+			if (cert->pubKeySize != CRYPTO_PUBLICKEYBYTES){
+				ret = RSA_KEY_SIZE_E;
+				WOLFSSL_MSG("\tCA Sphincs key size error");
+			}
+			break;
+	#endif /* HAVE_SPHINCS */
+
 #endif /* HAVE_POSTQUANTUM */
 
             #ifndef NO_RSA
@@ -5233,6 +5258,62 @@ static int ProcessBufferTryDecode(WOLFSSL_CTX* ctx, WOLFSSL* ssl, DerBuffer* der
 			}
 		}
 	#endif
+	#ifdef HAVE_PICNIC
+
+		if (ret == 0 && (*keyFormat == 0 || *keyFormat == PICNIC3_LEVEL1k)) {
+
+
+			if (wc_PQPrivateKeyDecode(der->buffer, idx, NULL, der->length) == 0) {
+
+				*keySz = CRYPTO_SECRETKEYBYTES;
+
+				*keyFormat = PICNIC3_LEVEL1k;
+				ctx->privateKeyType = picnic3_level1_sa_algo;
+
+
+				ctx->privateKeySz = *keySz;
+
+				if (ssl && ssl->options.side == WOLFSSL_SERVER_END) {
+					ssl->options.haveStaticECC = 0;
+					*resetSuites = 1;
+				}
+			}
+		}
+
+	#endif /* HAVE_PICNIC */
+	#ifdef HAVE_SPHINCS
+
+		if (ret == 0 && (*keyFormat == 0 || *keyFormat == SPHINCSFSIMPLE_LEVEL1k || \
+				*keyFormat == SPHINCSSSIMPLE_LEVEL1k)) {
+
+
+			if (wc_PQPrivateKeyDecode(der->buffer, idx, NULL, der->length) == 0) {
+
+				*keySz = CRYPTO_SECRETKEYBYTES;
+
+				#if SPHINCS_SECURITY_LEVEL==1
+					#ifdef SPHINCS_VARIANT_FAST
+						*keyFormat = SPHINCSFSIMPLE_LEVEL1k;
+						ctx->privateKeyType = sphincsfsimple_level1_sa_algo;
+					#else
+						*keyFormat = SPHINCSSSIMPLE_LEVEL1k;
+						ctx->privateKeyType = sphincsssimple_level1_sa_algo;
+					#endif /* SPHINCS_VARIANT */
+				#elif SPHINCS_SECURITY_LEVEL==3
+				#else
+				#endif /* SPHINCS_SECURITY_LEVEL */
+
+
+				ctx->privateKeySz = *keySz;
+
+				if (ssl && ssl->options.side == WOLFSSL_SERVER_END) {
+					ssl->options.haveStaticECC = 0;
+					*resetSuites = 1;
+				}
+			}
+		}
+
+	#endif /* HAVE_SPHINCS */
 
 #endif /* HAVE_POSTQUANTUM */
 

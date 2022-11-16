@@ -10,6 +10,10 @@
 
 #include "dilithium_security.h"
 
+#undef CRYPTO_PUBLICKEYBYTES
+#undef CRYPTO_SECRETKEYBYTES
+#undef CRYPTO_BYTES
+
 #if DILITHIUM_SECURITY_LEVEL==1
 	#include "wolfcrypt/postquantum/dilithium/dilithium2/api.h"
 #elif DILITHIUM_SECURITY_LEVEL==3

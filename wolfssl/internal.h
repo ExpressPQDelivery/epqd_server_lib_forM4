@@ -1462,8 +1462,11 @@ enum Misc {
 
 #ifndef NO_RSA
 
+	//HAVE_DILITHIUM for search purposes
 #ifdef HAVE_POSTQUANTUM
-	MAX_CERT_VERIFY_SZ = 4595, /* max Dilithium5 signature in bytes as of 29/10/21 (Round3) */
+//	MAX_CERT_VERIFY_SZ = 4595, /* max Dilithium5 signature in bytes as of 29/10/21 (Round3) */
+//	MAX_CERT_VERIFY_SZ = 14612, /* max Picnic3 signature in bytes as of 15/06/22 (Round3) */
+	MAX_CERT_VERIFY_SZ = 17088, /* max Sphincs-128 signature in bytes as of 15/06/22 (Round3) */
 #else
 	MAX_CERT_VERIFY_SZ = WOLFSSL_MAX_RSA_BITS / 8, /* max RSA bytes */
 #endif /* HAVE_POSTQUANTUM */
@@ -1501,7 +1504,13 @@ enum Misc {
 	#ifdef HAVE_FALCON
 		MAX_X509_SIZE      = 5120, /* max static Falcon x509 buffer size (4122 actually)*/
 	#endif
-#else
+	#ifdef HAVE_PICNIC
+		MAX_X509_SIZE      = 12932, /* max static Picnic3 x509 buffer size (12932 bytes)*/
+	#endif
+	#ifdef HAVE_SPHINCS
+		MAX_X509_SIZE      = 17088, /* max static Sphincs+ x509 buffer size (12932 bytes)*/
+	#endif
+#else  // Traditional
 		MAX_X509_SIZE      = 2048, /* max static x509 buffer size */
 #endif /* HAVE_POSTQUANTUM */
 
@@ -3102,11 +3111,17 @@ enum SignatureAlgorithm {
     ed448_sa_algo     = 11,
 
 #ifdef HAVE_POSTQUANTUM
-	falcon_level1_sa_algo		= 12,	// Falcon512
-	falcon_level5_sa_algo		= 13,	// Falcon1024
-	dilithium_level1_sa_algo	= 14,	// Dilithium2
-	dilithium_level3_sa_algo	= 15,	// Dilithium3
-	dilithium_level5_sa_algo	= 16	// Dilithium5 (not supported yet in NUCLEO)
+	//HAVE_DILITHIUM		// for search purposes
+	//HAVE_FALCON
+	falcon_level1_sa_algo				= 12,	// Falcon512
+	falcon_level5_sa_algo				= 13,	// Falcon1024
+	dilithium_level1_sa_algo			= 14,	// Dilithium2
+	dilithium_level3_sa_algo			= 15,	// Dilithium3
+	dilithium_level5_sa_algo			= 16,	// Dilithium5 (not supported yet in NUCLEO)
+	picnic3_level1_sa_algo				= 17, 	// Picnic3
+	sphincsfsimple_level1_sa_algo		= 18, 	// Sphincs128-fast-simple
+	sphincsssimple_level1_sa_algo		= 19 	// Sphincs128-small-simple
+
 #endif /* HAVE_POSTQUANTUM */
 };
 
@@ -4158,6 +4173,16 @@ struct WOLFSSL {
 	#ifdef HAVE_FALCON
 		byte* 			peerFalconKey; // Maybe I could create a Falcon struct
 		byte			peerFalconKeyPresent;
+	#endif
+
+	#ifdef HAVE_PICNIC
+		byte* 			peerPicnic3Key; // Maybe I could create a Picnic struct
+		byte			peerPicnic3KeyPresent;
+	#endif
+
+	#ifdef HAVE_SPHINCS
+		byte* 			peerSphincsKey; // Maybe I could create a Sphincs struct
+		byte			peerSphincsKeyPresent;
 	#endif
 
 #endif /* HAVE_POSTQUANTUM */

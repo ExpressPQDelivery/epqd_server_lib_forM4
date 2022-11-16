@@ -108,6 +108,12 @@
 	#ifdef HAVE_FALCON
 		#include <wolfcrypt/postquantum/falcon/api_falcon.h>
 	#endif
+	#ifdef HAVE_PICNIC
+		#include <wolfcrypt/postquantum/picnic/api_picnic.h>
+	#endif /* HAVE_PICNIC */
+	#ifdef HAVE_SPHINCS
+		#include <wolfcrypt/postquantum/sphincs/api_sphincs.h>
+	#endif /* HAVE_SPHINCS */
 #endif /* HAVE_POSTQUANTUM */
 
 #ifdef HAVE_NTRU
@@ -4601,6 +4607,7 @@ static WC_INLINE void EncodeSigAlg(byte hashAlgo, byte hsType, byte* output)
 #endif
 
 #ifdef HAVE_POSTQUANTUM
+
 	#ifdef HAVE_DILITHIUM
         case dilithium_level5_sa_algo:
         	output[1] = dilithium_level5_sa_algo;
@@ -4625,6 +4632,23 @@ static WC_INLINE void EncodeSigAlg(byte hashAlgo, byte hsType, byte* output)
         	output[0] = hashAlgo;
         	break;
 	#endif
+	#ifdef HAVE_PICNIC
+		case picnic3_level1_sa_algo:
+			output[1] = picnic3_level1_sa_algo;
+			output[0] = hashAlgo;
+			break;
+	#endif /* HAVE_PICNIC */
+	#ifdef HAVE_SPHINCS
+		case sphincsfsimple_level1_sa_algo:
+			output[1] = sphincsfsimple_level1_sa_algo;
+			output[0] = hashAlgo;
+			break;
+		case sphincsssimple_level1_sa_algo:
+			output[1] = sphincsssimple_level1_sa_algo;
+			output[0] = hashAlgo;
+			break;
+	#endif /* HAVE_SPHINCS */
+
 #endif /* HAVE_POSTQUANTUM */
 
     }
@@ -5550,7 +5574,7 @@ static int SendTls13CertificateVerify(WOLFSSL* ssl)
             if (ssl->hsType == DYNAMIC_TYPE_POSTQUANTUM) {
 
             	/* Create the signature over the Data-to-be-Signed */
-          	ret = crypto_sign_signature(args->verify + HASH_SIG_SIZE + VERIFY_HEADER, (word64*)&args->sigLen,
+            	ret = crypto_sign_signature(args->verify + HASH_SIG_SIZE + VERIFY_HEADER, (word64*)&args->sigLen,
           									args->sigData, args->sigDataSz, (byte *)ssl->hsKey);
 
                 if (ret == 0) {
@@ -5558,6 +5582,59 @@ static int SendTls13CertificateVerify(WOLFSSL* ssl)
                 }
             }
 	#endif
+	#ifdef HAVE_PICNIC
+
+			if (ssl->hsType == DYNAMIC_TYPE_POSTQUANTUM) {
+
+				/* Create the signature over the hash of the Data-to-be-Signed */
+				ret = picnic_crypto_sign_signature(args->verify + HASH_SIG_SIZE + VERIFY_HEADER, (size_t*)&args->sigLen,
+											args->sigData, args->sigDataSz, (byte*)ssl->hsKey);
+
+				if (ret == 0) {
+					args->length = (word16)args->sigLen; //for the final length
+				}
+			}
+
+	#endif /* HAVE_PICNIC */
+
+	#ifdef HAVE_SPHINCS
+		#if SPHINCS_SECURITY_LEVEL==1
+			#ifdef SPHINCS_VARIANT_FAST
+
+
+         if (ssl->hsType == DYNAMIC_TYPE_POSTQUANTUM) {
+
+         	/* Create the signature over the hash of the Data-to-be-Signed */
+         	ret = PQCLEAN_SPHINCSSHA256128FSIMPLE_CLEAN_crypto_sign_signature(args->verify + HASH_SIG_SIZE + VERIFY_HEADER, (size_t*)&args->sigLen,
+         								args->sigData, args->sigDataSz, (byte*)ssl->hsKey);
+
+             if (ret == 0) {
+                 args->length = (word16)args->sigLen; //for the final length
+             }
+         }
+
+
+			#else
+
+
+         if (ssl->hsType == DYNAMIC_TYPE_POSTQUANTUM) {
+
+         	/* Create the signature over the hash of the Data-to-be-Signed */
+         	ret = PQCLEAN_SPHINCSSHA256128SSIMPLE_CLEAN_crypto_sign_signature(args->verify + HASH_SIG_SIZE + VERIFY_HEADER, (size_t*)&args->sigLen,
+         								args->sigData, args->sigDataSz, (byte*)ssl->hsKey);
+
+             if (ret == 0) {
+                 args->length = (word16)args->sigLen; //for the final length
+             }
+         }
+
+
+			#endif /* SPHINCS_VARIANT */
+		#elif SPHINCS_SECURITY_LEVEL==3
+		#else
+		#endif /* SPHINCS_SECURITY_LEVEL */
+	#endif /* HAVE_SPHINCS */
+
 #endif /* HAVE_POSTQUANTUM */
 
         #ifndef NO_RSA
@@ -5620,6 +5697,54 @@ static int SendTls13CertificateVerify(WOLFSSL* ssl)
         		/* Nothing to do here, fall through */
             }
 	#endif
+	#ifdef HAVE_PICNIC
+
+			if (ssl->hsType == DYNAMIC_TYPE_POSTQUANTUM) {
+	//            	/* Check for signature faults (mimicking RSA's behaviour; can be ommited) */
+	//                ret = falcon_crypto_sign_verify(args->verify + HASH_SIG_SIZE + VERIFY_HEADER, args->sigLen,
+	//            			sig->buffer, sig->length, pubK);
+
+				/* Nothing to do here, fall through */
+
+			 }
+
+	#endif /* HAVE_PICNIC */
+
+	#ifdef HAVE_SPHINCS
+		#if SPHINCS_SECURITY_LEVEL==1
+			#ifdef SPHINCS_VARIANT_FAST
+
+
+			if (ssl->hsType == DYNAMIC_TYPE_POSTQUANTUM) {
+
+	//            	/* Check for signature faults (mimicking RSA's behaviour; can be ommited) */
+	//                ret = falcon_crypto_sign_verify(args->verify + HASH_SIG_SIZE + VERIFY_HEADER, args->sigLen,
+	//            			sig->buffer, sig->length, pubK);
+
+				/* Nothing to do here, fall through */
+
+			 }
+
+			#else
+
+
+			if (ssl->hsType == DYNAMIC_TYPE_POSTQUANTUM) {
+
+	//            	/* Check for signature faults (mimicking RSA's behaviour; can be ommited) */
+	//                ret = falcon_crypto_sign_verify(args->verify + HASH_SIG_SIZE + VERIFY_HEADER, args->sigLen,
+	//            			sig->buffer, sig->length, pubK);
+
+				/* Nothing to do here, fall through */
+
+			 }
+
+			#endif /* SPHINCS_VARIANT */
+		#elif SPHINCS_SECURITY_LEVEL==3
+		#else
+		#endif /* SPHINCS_SECURITY_LEVEL */
+	#endif /* HAVE_SPHINCS */
+
+
 #endif /* HAVE_POSTQUANTUM */
 
         #ifndef NO_RSA
@@ -6027,6 +6152,34 @@ static int DoTls13CertificateVerify(WOLFSSL* ssl, byte* input,
 				ret = 0;
             }
 	#endif
+	#ifdef HAVE_PICNIC
+			if (ssl->peerPicnic3Key != NULL && ssl->peerPicnic3KeyPresent != 0) {
+				WOLFSSL_MSG("Doing Picnic3 peer signature verify");
+
+				/* Create the data to be signed. */
+				ret = CreateSigData(ssl, args->sigData, &args->sigDataSz, 1);
+				if (ret != 0)
+					return ret;
+
+				ret = 0;
+			}
+	#endif /* HAVE_PICNIC */
+
+	#ifdef HAVE_SPHINCS
+
+			if (ssl->peerSphincsKey != NULL && ssl->peerSphincsKeyPresent != 0) {
+				WOLFSSL_MSG("Doing Sphincs peer signature verify");
+
+				/* Create the data to be signed. */
+				ret = CreateSigData(ssl, args->sigData, &args->sigDataSz, 1);
+				if (ret != 0)
+					return ret;
+
+				ret = 0;
+			}
+
+	#endif /* HAVE_SPHINCS */
+
 #endif /* HAVE_POSTQUANTUM */
 
         #ifndef NO_RSA
@@ -6144,6 +6297,51 @@ static int DoTls13CertificateVerify(WOLFSSL* ssl, byte* input,
             }
 
 	#endif
+	#ifdef HAVE_PICNIC
+
+			if (ssl->peerPicnic3Key != NULL && ssl->peerPicnic3KeyPresent != 0) {
+				WOLFSSL_MSG("Doing Picnic peer signature verify");
+
+				/* Verify the signature */
+				ret = picnic_crypto_sign_verify(sig->buffer, sig->length,
+						args->sigData, args->sigDataSz, ssl->peerPicnic3Key);
+
+			}
+
+	#endif /* HAVE_PICNIC */
+
+	#ifdef HAVE_SPHINCS
+		#if SPHINCS_SECURITY_LEVEL==1
+			#ifdef SPHINCS_VARIANT_FAST
+
+
+			if (ssl->peerSphincsKey != NULL && ssl->peerSphincsKeyPresent != 0) {
+				WOLFSSL_MSG("Doing Sphincs peer signature verify");
+
+				/* Verify the signature */
+				ret = PQCLEAN_SPHINCSSHA256128FSIMPLE_CLEAN_crypto_sign_verify(sig->buffer, sig->length,
+						args->sigData, args->sigDataSz, ssl->peerSphincsKey);
+
+			}
+
+			#else
+
+
+			if (ssl->peerSphincsKey != NULL && ssl->peerSphincsKeyPresent != 0) {
+				WOLFSSL_MSG("Doing Sphincs peer signature verify");
+
+				/* Verify the signature */
+				ret = PQCLEAN_SPHINCSSHA256128SSIMPLE_CLEAN_crypto_sign_verify(sig->buffer, sig->length,
+						args->sigData, args->sigDataSz, ssl->peerSphincsKey);
+
+			}
+
+			#endif /* SPHINCS_VARIANT */
+		#elif SPHINCS_SECURITY_LEVEL==3
+		#else
+		#endif /* SPHINCS_SECURITY_LEVEL */
+	#endif /* HAVE_SPHINCS */
+
 #endif /* HAVE_POSTQUANTUM */
 
         #if !defined(NO_RSA) && defined(WC_RSA_PSS)
