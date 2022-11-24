@@ -8,40 +8,104 @@ This product contains the following open source components
 Overview
 --------------------------------------------------------------------------
 
-Name: 	   <wolfSSL embedded SSL library>
+Name:      <wolfSSL embedded SSL library>
 Version:   <4.7.0>
-URL:	   <https://www.wolfssl.com/download/>
+URL:       <https://www.wolfssl.com/download/>
 License:   <GNU GPL v2.0>
-Copyright: <wolfSSL Inc.>		
+Copyright: <wolfSSL Inc.>       
 Comment:   <>
 
-Name: 	   <Falcon>
+Name:      <Falcon>
 Version:   <PQClean>
-URL:	   <https://github.com/PQClean/PQClean/tree/master/crypto_sign/falcon-512/clean>
+URL:       <https://github.com/PQClean/PQClean/tree/master/crypto_sign/falcon-512/clean>
 License:   <MIT license>
-Copyright: <Falcon Project>		
+Copyright: <Falcon Project>     
 Comment:   <>
 
-Name: 	   <CRYSTALS-Kyber>
+Name:      <CRYSTALS-Kyber>
 Version:   <PQClean>
-URL:	   <https://github.com/PQClean/PQClean/tree/master/crypto_kem/kyber512/clean>
+URL:       <https://github.com/PQClean/PQClean/tree/master/crypto_kem/kyber512/clean>
 License:   <Public Domain>
-Copyright: <None (public domain)>		
+Copyright: <None (public domain)>       
 Comment:   <>
 
-Name: 	   <CRYSTALS-Dilithium>
+Name:      <CRYSTALS-Dilithium>
 Version:   <PQClean>
-URL:	   <https://github.com/PQClean/PQClean/tree/master/crypto_sign/dilithium2/clean>
+URL:       <https://github.com/PQClean/PQClean/tree/master/crypto_sign/dilithium2/clean>
 License:   <Public Domain>
-Copyright: <None (public domain)>		
+Copyright: <None (public domain)>       
 Comment:   <>
 
-Name: 	   <Saber>
+Name:      <Saber>
 Version:   <PQClean>
-URL:	   <https://github.com/PQClean/PQClean/tree/master/crypto_kem/saber/clean>
+URL:       <https://github.com/PQClean/PQClean/tree/master/crypto_kem/saber/clean>
 License:   <Public Domain>
-Copyright: <None (public domain)>		
+Copyright: <None (public domain)>       
 Comment:   <>
+
+Name:      <NTRU>
+Version:   <PQClean>
+URL:       <https://github.com/PQClean/PQClean/releases/tag/round3>
+License:   <CC0>
+Copyright: <None>       
+Comment:   <>
+
+Name:      <SIKE>
+Version:   <PQCrypto-SIDH>
+URL:       <https://github.com/microsoft/PQCrypto-SIDH>
+License:   <MIT License>
+Copyright: <    Copyright (c) 2016-2017 Microsoft Corporation
+                Copyright (c) 2017      InfoSec Global, Reza Azarderakhsh, Matthew
+                                        Campagna, Luca De Feo, Amir Jalali, David Jao,
+                                        Brian Koziel, Joost Renes, and David Urbanik
+            >       
+Comment:   <>
+
+Name:      <BIKE>
+Version:   <mupq>
+URL:       <https://github.com/mupq/mupq/tree/master/crypto_kem/bikel1/opt>
+License:   <Apache v2.0>
+Copyright: <Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.>       
+Comment:   <>
+
+Name:      <HQC>
+Version:   <PQClean>
+URL:       <https://github.com/PQClean/PQClean/releases/tag/round3>
+License:   <Public Domain>
+Copyright: <None (public domain)>       
+Comment:   <>
+
+Name:      <NTRU Prime>
+Version:   <PQClean>
+URL:       <https://github.com/PQClean/PQClean/releases/tag/round3>
+License:   <Public Domain>
+Copyright: <None (public domain)>       
+Comment:   <>
+
+Name:      <FrodoKEM>
+Version:   <PQClean>
+URL:       <https://github.com/PQClean/PQClean/releases/tag/round3>
+License:   <MIT>
+Copyright: < (c) Microsoft Corporation. All rights reserved.>       
+Comment:   <>
+
+Name:      <SPHINCS+>
+Version:   <PQClean>
+URL:       <https://github.com/PQClean/PQClean/releases/tag/round3>
+License:   <CC0 1.0>
+Copyright: <None>       
+Comment:   <>
+
+Name:      <Picnic3>
+Version:   <pqm4(opt)>
+URL:       <https://github.com/mupq/pqm4/releases/tag/Round3>
+License:   <MIT License>
+Copyright: <    Copyright (c) 2019 AIT Austrian Institute of Technology
+                Copyright (c) 2016-2018 Graz University of Technology
+                Copyright (c) 2017 Angela Promitzer
+            >       
+Comment:   <>
+
 
 --------------------------------------------------------------------------
 License for <wolfSSL embedded SSL library>
