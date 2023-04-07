@@ -3,13 +3,34 @@
 ## Description
 This is a tweeked version of WolfSSL that enables the use of Postquantum algorithms in TLS 1.3 key exchange and authentication methods, designed to run on PC's. The version we are using is [WolfSSL 4.7.0](https://github.com/wolfSSL/wolfssl/releases/tag/v4.7.0-stable) and the postquantum algorithms are from [PQClean](https://github.com/PQClean/PQClean). The postquantum algorithms that are supported are:
 
-- [x] Kyber
+
+### Key Encapsualtion Mechanisms (KEMs)
+
+- [x] CRYSTALS-Kyber
 
 - [x] Saber
 
-- [x] Dilithium
+- [x] NTRU
+
+- [x] SIKE
+
+- [x] BIKE
+
+- [x] HQC
+
+- [x] NTRU Lprime
+
+- [x] FrodoKEM
+
+### Digital Signature Algorithms
+
+- [x] CRYSTALS-Dilithium
 
 - [x] Falcon
+
+- [x] SPHINCS+
+
+- [x] Picnic3
 
 ## System Requirements
 
@@ -25,6 +46,8 @@ The only thing on this project that is system specific is the **PQClean crypto l
 
 Below we have included a script that takes care of the installation of the necessary libraries from PQClean.
 
+# - - - IMPORTANT NOTICE - - -  
+The rest of the README instructions are not tested on the revised version of the code 
 
 ## Installation
 
@@ -61,15 +84,28 @@ autogen.sh will take care of everything your systems needs for the installation 
 
 5. Before we build the project we must edit the `config.h` file and add these lines on the top:
 ```
-/* ---------------POSTQUANTUM TLS CONFIGURATIONS-----------------*/
-		#define HAVE_POSTQUANTUM
-/* -----------------------------------------------------------*/
-		#define HAVE_DILITHIUM  // choose authentication
-//		#define HAVE_FALCON     // method
-/* --------------------------------------------------------*/
-		#define HAVE_KYBER      // choose key exchange
-//		#define HAVE_SABER      // method
-/* -----------------------------------------------------*/
+/* ---------------POSTQUANTUM TLS CONFIGURATIONS-------------*/
+		#define HAVE_POSTQUANTUM	//
+/* ----------------------------------------------------------*/
+		#define HAVE_DILITHIUM		// 		choose
+//		#define HAVE_FALCON			// 	authentication
+//		#define HAVE_PICNIC			// 		method
+//		#define HAVE_SPHINCS		//
+/* ----------------------------------------------------------*/
+		#define HAVE_KYBER			//
+//		#define HAVE_SABER			//
+//		#define HAVE_FRODO			//		choose
+//		#define HAVE_BIKE			//		key
+//		#define HAVE_SIKE			//	 	exchange
+//		#define HAVE_HQC			//		method
+//		#define HAVE_NTRULPR		//
+//		#define HAVE_NTRU_PQM4		//
+/* ----------------------------------------------------------*/
+		#define HAVE_MUTUAL_AUTH	// Mutual auth 			 *
+ /* ---------------------------------------------------------*/
+//		#define HAVE_TRADITIONAL
+// 		#define MY_HAVE_ECC			// Traditional
+ /* ----------------------------------------------------------*/
 ```
 6. Now we are ready to build the whole project:
 
@@ -157,7 +193,7 @@ Client  TLS13-CHACHA20-POLY1305-SHA256         6012928        735    136.263    
 
 ### Troubleshooting
 
-If the benchamrk shows an error like this:
+If the benchmark shows an error like this:
 
 ```
 ERROR: failed to connect
@@ -194,7 +230,7 @@ This project's build and usage has been tested successfully on the following pla
 
 - [x] Dell Inspiron 14 7000, running Ubuntu 20.04 with a 11th Gen Intel® Core™ i7-1165G7 @ 2.80GHz × 8 processor.
 
-- [x] Raspberry Pi 4 Model B, running Raspberry Pi OS with a 1.5 GHz 64-bit quad core ARM Cortex-A72 processor.
+- [ ] Raspberry Pi 4 Model B, running Raspberry Pi OS with a 1.5 GHz 64-bit quad core ARM Cortex-A72 processor.
 
 ## Extra info
 
