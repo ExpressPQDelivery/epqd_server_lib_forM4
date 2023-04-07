@@ -2151,6 +2151,46 @@ int bench_tls(void* args)
     // Printing PQ authentication and key exchange method by determining which one is enabled
 
 #ifdef HAVE_POSTQUANTUM
+
+	#ifdef HAVE_DILITHIUM
+		#ifdef DILITHIUM_SECURITY_LEVEL
+			#if DILITHIUM_SECURITY_LEVEL==1
+					printf("TLS authentication method: \t\t%s\n", PQCLEAN_DILITHIUM2_CLEAN_CRYPTO_ALGNAME);
+			#elif DILITHIUM_SECURITY_LEVEL==3
+					printf("TLS authentication method: \t\t%s\n", PQCLEAN_DILITHIUM3_CLEAN_CRYPTO_ALGNAME);
+			#elif DILITHIUM_SECURITY_LEVEL==5
+					printf("TLS authentication method: \t\t%s\n", PQCLEAN_DILITHIUM5_CLEAN_CRYPTO_ALGNAME);
+			#endif /* DILITHIUM_SECURITY_LEVEL */
+		#endif
+	#endif /* HAVE_DILITHIUM */
+
+	#ifdef HAVE_FALCON
+		#ifdef FALCON_SECURITY_LEVEL
+			#if FALCON_SECURITY_LEVEL==1
+					printf("TLS authentication method: \t\t%s\n", PQCLEAN_FALCON512_CLEAN_CRYPTO_ALGNAME);
+			#elif FALCON_SECURITY_LEVEL==5
+					printf("TLS authentication method: \t\t%s\n", PQCLEAN_FALCON1024_CLEAN_CRYPTO_ALGNAME);
+			#endif /* FALCON_SECURITY_LEVEL */
+		#endif
+	#endif /* HAVE_FALCON */
+
+	#ifdef HAVE_PICNIC
+					printf("TLS authentication method: \t\t%s\n", CRYPTO_ALGNAME);
+	#endif /* HAVE_PICNIC */
+
+	#ifdef HAVE_SPHINCS
+	#if SPHINCS_SECURITY_LEVEL==1
+		#ifdef SPHINCS_VARIANT_FAST
+					printf("TLS authentication method: \t\t%s%s\n", PQCLEAN_SPHINCSSHA256128FSIMPLE_CLEAN_CRYPTO_ALGNAME, " 128-fast-simple");
+		#else
+					printf("TLS authentication method: \t\t%s%s\n", PQCLEAN_SPHINCSSHA256128SSIMPLE_CLEAN_CRYPTO_ALGNAME, " 128-small-simple");
+		#endif /* SPHINCS_VARIANT */
+	#elif SPHINCS_SECURITY_LEVEL==3
+	#else
+	#endif /* SPHINCS_SECURITY_LEVEL */
+	#endif /* HAVE_SPHINCS */
+
+
 	#ifdef KYBER_SECURITY_LEVEL
 		#if KYBER_SECURITY_LEVEL==1
 				printf("TLS key exchange method: \t\t%s\n", PQCLEAN_KYBER512_CLEAN_CRYPTO_ALGNAME);
@@ -2190,44 +2230,7 @@ int bench_tls(void* args)
 		printf("TLS key exchange method: \t\t%s\n", PQCLEAN_NTRU_CRYPTO_ALGNAME);
 #endif
 
-	#ifdef HAVE_DILITHIUM
-		#ifdef DILITHIUM_SECURITY_LEVEL
-			#if DILITHIUM_SECURITY_LEVEL==1
-					printf("TLS authentication method: \t\t%s\n\n", PQCLEAN_DILITHIUM2_CLEAN_CRYPTO_ALGNAME);
-			#elif DILITHIUM_SECURITY_LEVEL==3
-					printf("TLS authentication method: \t\t%s\n\n", PQCLEAN_DILITHIUM3_CLEAN_CRYPTO_ALGNAME);
-			#elif DILITHIUM_SECURITY_LEVEL==5
-					printf("TLS authentication method: \t\t%s\n\n", PQCLEAN_DILITHIUM5_CLEAN_CRYPTO_ALGNAME);
-			#endif /* DILITHIUM_SECURITY_LEVEL */
-		#endif
-	#endif /* HAVE_DILITHIUM */
-
-	#ifdef HAVE_FALCON
-		#ifdef FALCON_SECURITY_LEVEL
-			#if FALCON_SECURITY_LEVEL==1
-					printf("TLS authentication method: \t\t%s\n\n", PQCLEAN_FALCON512_CLEAN_CRYPTO_ALGNAME);
-			#elif FALCON_SECURITY_LEVEL==5
-					printf("TLS authentication method: \t\t%s\n\n", PQCLEAN_FALCON1024_CLEAN_CRYPTO_ALGNAME);
-			#endif /* FALCON_SECURITY_LEVEL */
-		#endif
-	#endif /* HAVE_FALCON */
-
-	#ifdef HAVE_PICNIC
-					printf("TLS authentication method: \t\t%s\n\n", CRYPTO_ALGNAME);
-	#endif /* HAVE_PICNIC */
-
-#ifdef HAVE_SPHINCS
-	#if SPHINCS_SECURITY_LEVEL==1
-		#ifdef SPHINCS_VARIANT_FAST
-					printf("TLS authentication method: \t\t%s%s\n\n", PQCLEAN_SPHINCSSHA256128FSIMPLE_CLEAN_CRYPTO_ALGNAME, " 128-fast-simple");
-		#else
-					printf("TLS authentication method: \t\t%s%s\n\n", PQCLEAN_SPHINCSSHA256128SSIMPLE_CLEAN_CRYPTO_ALGNAME, " 128-small-simple");
-		#endif /* SPHINCS_VARIANT */
-	#elif SPHINCS_SECURITY_LEVEL==3
-	#else
-	#endif /* SPHINCS_SECURITY_LEVEL */
-#endif /* HAVE_SPHINCS */
-
+		printf("\n");
 #endif /* HAVE_POSTQUANTUM */
 
 
