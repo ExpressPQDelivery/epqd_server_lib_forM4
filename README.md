@@ -46,8 +46,6 @@ The only thing on this project that is system specific is the **PQClean crypto l
 
 Below we have included a script that takes care of the installation of the necessary libraries from PQClean.
 
-# - - - IMPORTANT NOTICE - - -  
-The rest of the README instructions are not tested on the revised version of the code 
 
 ## Installation
 
@@ -84,28 +82,47 @@ autogen.sh will take care of everything your systems needs for the installation 
 
 5. Before we build the project we must edit the `config.h` file and add these lines on the top:
 ```
-/* ---------------POSTQUANTUM TLS CONFIGURATIONS-------------*/
-		#define HAVE_POSTQUANTUM	//
-/* ----------------------------------------------------------*/
-		#define HAVE_DILITHIUM		// 		choose
-//		#define HAVE_FALCON			// 	authentication
-//		#define HAVE_PICNIC			// 		method
-//		#define HAVE_SPHINCS		//
-/* ----------------------------------------------------------*/
-		#define HAVE_KYBER			//
-//		#define HAVE_SABER			//
-//		#define HAVE_FRODO			//		choose
-//		#define HAVE_BIKE			//		key
-//		#define HAVE_SIKE			//	 	exchange
-//		#define HAVE_HQC			//		method
-//		#define HAVE_NTRULPR		//
-//		#define HAVE_NTRU_PQM4		//
-/* ----------------------------------------------------------*/
-		#define HAVE_MUTUAL_AUTH	// Mutual auth 			 *
- /* ---------------------------------------------------------*/
-//		#define HAVE_TRADITIONAL
-// 		#define MY_HAVE_ECC			// Traditional
- /* ----------------------------------------------------------*/
+/* ----------------------------------------------------------------------------------*/
+/* Post-quantum TLS 1.3 Benchmark */
+/* ----------------------------------------------------------------------------------*/
+
+
+	#define HAVE_POSTQUANTUM	// Enables post-quantum in TLS 1.3
+	/* ------------------------------------------------------------------------------*/
+	#define HAVE_DILITHIUM		// 		choose
+//	#define HAVE_FALCON			// 	authentication
+//	#define HAVE_PICNIC			// 		method
+//	#define HAVE_SPHINCS		//
+	/* ------------------------------------------------------------------------------*/
+	#define HAVE_KYBER			//
+//	#define HAVE_SABER			//
+//	#define HAVE_FRODO			//		choose
+//	#define HAVE_BIKE			//		key
+//	#define HAVE_SIKE			//	 	exchange
+//	#define HAVE_HQC			//		method
+//	#define HAVE_NTRULPR		//
+//	#define HAVE_NTRU_PQM4		//
+	/* ------------------------------------------------------------------------------*/
+//	#define HAVE_TRADITIONAL	// Enable to have TLS with RSA sign (regardless of HAVE_POSTQUANTUM)
+//	#define MY_HAVE_ECC			// Enable to have TLS with ECC sign
+	/* ------------------------------------------------------------------------------*/
+	#define HAVE_MUTUAL_AUTH	// Enable to have mutual authentication
+
+
+ /*
+  * To control the *security levels* of each PQ algorithm you must go to the
+  * corresponding security file. For example for Kyber:
+  *
+  * Go to <wolfcrypt/postquantum/kyber/kyber_security.h> and enable one of
+  * the defines for the security levels.
+  *
+  * For Dilithium the path is <wolfcrypt/postquantum/dilithium/dilithium_security.h>
+  * and so on...
+  *
+  */
+
+
+
 ```
 6. Now we are ready to build the whole project:
 
@@ -209,8 +226,10 @@ To use this project to connect to a remote board (i.e a Nucleo Board) you should
 1. Set up a server to run on the local machine:
 
 ```
-./examples/benchmark/tls_bench -sv
+./examples/benchmark/tls_bench -sv -t 10 -l "TLS13-AES256-GCM-SHA384"
 ```
+
+This will run a local server on verbose mode (-sv), set the benchmark time to 10 seconds (-t 10) and use only the pecified cipher suite (-l "TLS13-AES256-GCM-SHA384").
 
 2. Get the internal IP if it's a local network or the external IP if it's connected to the Internet and use this [project](https://gitlab.com/g_tasop/pq-wolfssl-for-embedded) to setup and run the client from the board targeting that IP 
 
@@ -221,8 +240,10 @@ OR
 4. Run the client with the IP as an argument:
 
 ```
-./examples/benchmark/tls_bench -cvh "192.168.1.14"
+./examples/benchmark/tls_bench -cv -t 10 -l "TLS13-AES256-GCM-SHA384" -h "192.168.2.55"
 ```
+
+This will run a TLS 1.3 client in verbose mode (-cv), set the benchmark time to 10 seconds (-t 10), use only the pecified cipher suite (-l "TLS13-AES256-GCM-SHA384") and connect to the host with the specified IP (-h "192.168.2.55")
 
 ## Tested
 
@@ -230,77 +251,37 @@ This project's build and usage has been tested successfully on the following pla
 
 - [x] Dell Inspiron 14 7000, running Ubuntu 20.04 with a 11th Gen Intel® Core™ i7-1165G7 @ 2.80GHz × 8 processor.
 
-- [ ] Raspberry Pi 4 Model B, running Raspberry Pi OS with a 1.5 GHz 64-bit quad core ARM Cortex-A72 processor.
+- [x] Raspberry Pi 4 Model B, running Raspberry Pi OS with a 1.5 GHz 64-bit quad core ARM Cortex-A72 processor.
 
 ## Extra info
 
 If you want to test the performance on **traditional** TLS 1.3 you only need to:
 
-1. Comment out the Postquantum flags that we added in file `config.h`.
+1. Comment out the Post-quantum defines that we added in file `wolfssl/wolfSSL.I-CUBE-wolfSSL_conf.h`.
 
-2. Compile and run. 
+2. Uncomment `#define HAVE_TRADITIONAL`.
+
+3. Compile and run. 
 
 The default algorithms that WolfSSL 4.7.0 uses are: 
 
 - ECDHE (Elliptic Curve Diffie-Hellman Ephemeral) with curve **SECP256R1** for key exchange.
 
-- RSA for digital signatures.
+- RSA-2048 for digital signatures.
 
-To override them and use your own preferances you have to:
+To override them and use ECC in authentication you have to:
 
-#### Key exchange
+1.  Uncomment `#define MY_HAVE_ECC`.
 
-1. Edit file `src/tls.c` in line ~10791 to force the Key Exchange algorithm of your preference:
+2. Compile and run.
 
-```
-...
-#ifndef HAVE_POSTQUANTUM
-				// Force curve SECP256R1 (or any other group) for benchmarking purposes
-            	namedGroup = WOLFSSL_ECC_SECP256R1;
-#endif
-                ret = TLSX_KeyShare_Use(ssl, namedGroup, 0, NULL, NULL);
-...
+Now the traditional algorithms that are used are:
 
-```
+- ECDHE (Elliptic Curve Diffie-Hellman Ephemeral) with curve **SECP256R1** for key exchange.
 
-The available key exchange algorithms (groups) can be found on the `preferredGroup[]` array just above the function `TLSX_PopulateExtensions`, on line ~10532.
+- ECDSA (Elliptic Curve DSA) with curve **SECP256R1** for authentication.
 
 
-#### Authentication method
-
-The selection of a preferred digital signatures algorithm, is made by forcing wolfSSL to load a specific Certificate (or a Certificate-Private Key pair).
-
-To do this we have to do the following:
-
-1. Edit the file `/examples/benchmark/tls_bench.c` and go to the point where the client and the server loads the certificates.
-
-- This, for the server, is in function `bench_tls_server` at line ~1317 and ~1333 for the certificate and the private key respectivly.
-
-- For the client, this is in function `bench_tls_client` at line ~867.
-
-For example, lines 866-880 could look like this:
-
-```
-#ifdef HAVE_ECC
-    if (1) {
-        ret = wolfSSL_CTX_load_verify_buffer(cli_ctx, ca_ecc_cert_der_256,
-            sizeof_ca_ecc_cert_der_256, WOLFSSL_FILETYPE_ASN1);
-    }
-    else
-#endif
-    {
-        ret = wolfSSL_CTX_load_verify_buffer(cli_ctx, ca_cert_der_2048,
-            sizeof_ca_cert_der_2048, WOLFSSL_FILETYPE_ASN1);
-    }
-    if (ret != WOLFSSL_SUCCESS) {
-        printf("error loading CA\n");
-        goto exit;
-    }
-```
-
-This way you force the client to load an ECC certificate, thus using ECDSA with curve SECP256R1.
-
-You can also load all the other enabled certificates included in the file `/wolfssl/certs-test.h`.
 
 ## License
 For all the licenses of the components of this project, see file ``Third-party-licenses.txt`.
