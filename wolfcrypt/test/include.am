@@ -27,28 +27,8 @@ wolfcrypt_test_testwolfcrypt_LDADD        = src/libwolfssl.la $(LIB_STATIC_ADD) 
 									wolfcrypt/postquantum/dilithium/dilithium3/libdilithium3_clean.la \
 									wolfcrypt/postquantum/dilithium/dilithium5/libdilithium5_clean.la \
 									wolfcrypt/postquantum/falcon/falcon512/libfalcon-512_clean.la \
-									wolfcrypt/postquantum/falcon/falcon1024/libfalcon-1024_clean.la \
-									wolfcrypt/postquantum/frodo/frodo640shake/libfrodokem640shake_clean.la \
-									wolfcrypt/postquantum/frodo/frodo640aes/libfrodokem640aes_clean.la \
-									wolfcrypt/postquantum/hqc/hqc128/libhqc-rmrs-128_clean.la \
-									wolfcrypt/postquantum/hqc/hqc192/libhqc-rmrs-192_clean.la \
-									wolfcrypt/postquantum/hqc/hqc256/libhqc-rmrs-256_clean.la \
-									wolfcrypt/postquantum/ntrulpr/ntrulpr653/libntrulpr653_clean.la \
-									wolfcrypt/postquantum/ntrulpr/ntrulpr761/libntrulpr761_clean.la \
-									wolfcrypt/postquantum/ntrulpr/ntrulpr857/libntrulpr857_clean.la \
-									wolfcrypt/postquantum/ntrulpr/ntrulpr1277/libntrulpr1277_clean.la \
-									wolfcrypt/postquantum/ntru/ntru2048509/libntruhps2048509_clean.la \
-									wolfcrypt/postquantum/ntru/ntru2048677/libntruhps2048677_clean.la \
-									wolfcrypt/postquantum/ntru/ntru4096821/libntruhps4096821_clean.la \
-									wolfcrypt/postquantum/bike/bike1/libbikel1_mupq.la \
-									wolfcrypt/postquantum/bike/bike3/libbikel3_mupq.la \
-									wolfcrypt/postquantum/sike/sikep434/libsikep434_mupq.la \
-									wolfcrypt/postquantum/sike/sikep503/libsikep503_mupq.la \
-									wolfcrypt/postquantum/sike/sikep610/libsikep610_mupq.la \
-									wolfcrypt/postquantum/sike/sikep751/libsikep751_mupq.la \
-									wolfcrypt/postquantum/picnic/picnic3l1/libpicnic3-l1.la \
-									wolfcrypt/postquantum/sphincs/128-fast/libsphincs-sha256-128f-simple_clean.la \
-									wolfcrypt/postquantum/sphincs/128-small/libsphincs-sha256-128s-simple_clean.la
+									wolfcrypt/postquantum/falcon/falcon1024/libfalcon-1024_clean.la
+
 wolfcrypt_test_testwolfcrypt_DEPENDENCIES = src/libwolfssl.la
 noinst_HEADERS += wolfcrypt/test/test.h wolfcrypt/test/test_paths.h.in
 endif

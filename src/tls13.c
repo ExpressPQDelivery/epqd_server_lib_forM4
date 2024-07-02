@@ -4014,7 +4014,6 @@ int DoTls13ClientHello(WOLFSSL* ssl, const byte* input, word32* inOutIdx,
     if (ssl->hsInfoOn) AddPacketName(ssl, "ClientHello");
     if (ssl->toInfoOn) AddLateName("ClientHello", &ssl->timeoutInfo);
 #endif
-
     /* protocol version, random and session id length check */
     if ((i - begin) + OPAQUE16_LEN + RAN_LEN + OPAQUE8_LEN > helloSz)
         return BUFFER_ERROR;
@@ -4025,7 +4024,7 @@ int DoTls13ClientHello(WOLFSSL* ssl, const byte* input, word32* inOutIdx,
     i += OPAQUE16_LEN;
     if (pv.major < SSLv3_MAJOR) {
         WOLFSSL_MSG("Legacy version field contains unsupported value");
- #ifdef WOLFSSL_MYSQL_COMPATIBLE
+ #ifdef WOLFSSL_MYSQL_COMPATIBLExzf
         SendAlert(ssl, alert_fatal, wc_protocol_version);
  #else
         SendAlert(ssl, alert_fatal, protocol_version);
@@ -4086,7 +4085,6 @@ int DoTls13ClientHello(WOLFSSL* ssl, const byte* input, word32* inOutIdx,
     sessIdSz = input[i++];
     if (sessIdSz != ID_LEN && sessIdSz != 0)
         return INVALID_PARAMETER;
-
     if (sessIdSz + i > helloSz) {
         return BUFFER_ERROR;
     }
@@ -4096,7 +4094,6 @@ int DoTls13ClientHello(WOLFSSL* ssl, const byte* input, word32* inOutIdx,
         XMEMCPY(ssl->session.sessionID, input + i, sessIdSz);
         i += ID_LEN;
     }
-
     /* Cipher suites */
     if ((i - begin) + OPAQUE16_LEN > helloSz)
         return BUFFER_ERROR;
@@ -4110,7 +4107,6 @@ int DoTls13ClientHello(WOLFSSL* ssl, const byte* input, word32* inOutIdx,
     XMEMCPY(clSuites.suites, input + i, clSuites.suiteSz);
     i += clSuites.suiteSz;
     clSuites.hashSigAlgoSz = 0;
-
     /* Compression */
     b = input[i++];
     if ((i - begin) + b > helloSz)
@@ -4124,13 +4120,11 @@ int DoTls13ClientHello(WOLFSSL* ssl, const byte* input, word32* inOutIdx,
         WOLFSSL_MSG("Must be no compression type in list");
         return INVALID_PARAMETER;
     }
-
     /* Extensions */
     if ((i - begin) == helloSz)
         return BUFFER_ERROR;
     if ((i - begin) + OPAQUE16_LEN > helloSz)
         return BUFFER_ERROR;
-
     ato16(&input[i], &totalExtSz);
     i += OPAQUE16_LEN;
     if ((i - begin) + totalExtSz > helloSz)
@@ -4154,9 +4148,14 @@ int DoTls13ClientHello(WOLFSSL* ssl, const byte* input, word32* inOutIdx,
 
     i += totalExtSz;
     *inOutIdx = i;
+/////////////Ebox-extension///////////////////
 
+    if(ssl->options.sendVerify == SEND_BLANK_CERT){  //Ebox-extension
+        printf("skip sending certificate\n");
+    }
+    else
     ssl->options.sendVerify = SEND_CERT;
-
+///////////////////////////////////////////////////////
     ssl->options.clientState = CLIENT_HELLO_COMPLETE;
     ssl->options.haveSessionId = 1;
 
@@ -4234,6 +4233,7 @@ int DoTls13ClientHello(WOLFSSL* ssl, const byte* input, word32* inOutIdx,
             SendAlert(ssl, alert_fatal, handshake_failure);
             return VERSION_ERROR;
         }
+
 
     #ifdef HAVE_SESSION_TICKET
         if (ssl->options.resuming) {
@@ -5327,7 +5327,7 @@ static int SendTls13CertificateVerify(WOLFSSL* ssl)
 
     WOLFSSL_START(WC_FUNC_CERTIFICATE_VERIFY_SEND);
     WOLFSSL_ENTER("SendTls13CertificateVerify");
-
+    printf("TLS13certificateverify \n");
 #ifdef WOLFSSL_ASYNC_CRYPT
     ret = wolfSSL_AsyncPop(ssl, &ssl->options.asyncState);
     if (ret != WC_NOT_PENDING_E) {
@@ -5351,9 +5351,11 @@ static int SendTls13CertificateVerify(WOLFSSL* ssl)
     {
         case TLS_ASYNC_BEGIN:
         {
+            printf("ssl->is_PQDelivary111: %d\n", ssl->is_PQDelivary);
             if (ssl->options.sendVerify == SEND_BLANK_CERT) {
                 return 0;  /* sent blank cert, can't verify */
             }
+            else  // ebox-extension
 
             args->sendSz = MAX_CERT_VERIFY_SZ + MAX_MSG_EXTRA;
             /* Always encrypted.  */

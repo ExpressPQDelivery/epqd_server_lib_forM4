@@ -2280,7 +2280,8 @@ typedef enum {
     #endif
     TLSX_KEY_SHARE                  = 0x0033,
 #endif
-    TLSX_RENEGOTIATION_INFO         = 0xff01
+    TLSX_RENEGOTIATION_INFO         = 0xff01,
+    TLSX_IS_PQDELIVARY              = 0x0034
 } TLSX_Type;
 
 typedef struct TLSX {
@@ -2289,6 +2290,8 @@ typedef struct TLSX {
     word32       val;  /* Extension Value */
     byte         resp; /* IsResponse Flag */
     struct TLSX* next; /* List Behavior   */
+    byte is_pqdelivary;
+
 } TLSX;
 
 WOLFSSL_LOCAL TLSX* TLSX_Find(TLSX* list, TLSX_Type type);
@@ -2460,6 +2463,11 @@ WOLFSSL_LOCAL void* TLSX_CSR2_GetRequest(TLSX* extensions, byte status_type,
 WOLFSSL_LOCAL int   TLSX_CSR2_ForceRequest(WOLFSSL* ssl);
 
 #endif
+
+typedef struct {
+    word16 flag;
+} FlagExtensionData; // Ebox-extension
+
 
 /** Supported Elliptic Curves - RFC 4492 (session 4) */
 #ifdef HAVE_SUPPORTED_CURVES
@@ -4071,6 +4079,8 @@ typedef enum EarlyDataState {
 
 /* wolfSSL ssl type */
 struct WOLFSSL {
+    int             is_PQDelivary;  //Ebox-extension
+
     WOLFSSL_CTX*    ctx;
     Suites*         suites;             /* only need during handshake */
     Arrays*         arrays;
@@ -4545,6 +4555,7 @@ enum HandShakeType {
     finished             =  20,
     certificate_status   =  22,
     key_update           =  24,
+    IS_PQDELIVARY_server =  53,
     change_cipher_hs     =  55,    /* simulate unique handshake type for sanity
                                       checks.  record layer change_cipher
                                       conflicts with handshake finished */

@@ -2097,7 +2097,7 @@ int wolfSSL_peek(WOLFSSL* ssl, void* data, int sz)
 
     return wolfSSL_read_internal(ssl, data, sz, TRUE);
 }
-
+    
 
 WOLFSSL_ABI
 int wolfSSL_read(WOLFSSL* ssl, void* data, int sz)

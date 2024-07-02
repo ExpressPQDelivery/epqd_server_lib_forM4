@@ -3309,7 +3309,7 @@ enum {
     WOLFSSL_NTRU_EESS593 = 0x0102, /* max plaintext length of 86  */
     WOLFSSL_NTRU_EESS743 = 0x0103, /* max plaintext length of 106 */
     WOLFSSL_LWE_XXX  = 0x0201,     /* Learning With Error encryption scheme */
-    WOLFSSL_HFE_XXX  = 0x0301,     /* Hidden Field Equation scheme */
+    WOLFSSL_HFE_XXX  = 0x0301,     /* Hidden Field Equation scheme send*/
     WOLFSSL_NULL_QSH = 0xFFFF      /* QSHScheme is not used */
 };
 

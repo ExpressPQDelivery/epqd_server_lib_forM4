@@ -83,6 +83,12 @@
     #include "libntruencrypt/ntru_crypto.h"
     #include <wolfssl/wolfcrypt/random.h>
 #endif
+//Ebox-extension
+int FlagExtensionRead(FlagExtensionData* data, const byte* input, int length, int msgType);
+int FlagExtensionGetsize (FlagExtensionData* data, int msgType);
+int FlagExtensionWrite(FlagExtensionData* data, byte* output, int msgType);
+int SetFlagExtension(TLSX** extensions, TLSX_Type type, void* data, void* heap);
+void FlagExtensionFree(FlagExtensionData* data, void* heap);
 
 #ifdef HAVE_QSH
     static int TLSX_AddQSHKey(QSHKey** list, QSHKey* key);
@@ -3342,6 +3348,52 @@ int TLSX_UseCertificateStatusRequest(TLSX** extensions, byte status_type,
 
 #endif /* HAVE_CERTIFICATE_STATUS_REQUEST */
 
+void FlagExtensionFree(FlagExtensionData* data, void* heap){
+    (void)data;
+    (void)heap;
+}
+
+int FlagExtensionGetsize (FlagExtensionData* data, int msgType){ //Ebox-extension
+    if (msgType == TLSX_IS_PQDELIVARY)
+        printf("its pqdelivary1\n");
+    return sizeof(data->flag);
+}
+
+
+int FlagExtensionWrite(FlagExtensionData* data, byte* output, int msgType){
+    int offset = 0;
+        if (msgType == TLSX_IS_PQDELIVARY)
+        printf("its pqdelivary2\n");
+    output[offset++] = (byte)data->flag;
+
+    return offset;
+}
+
+int FlagExtensionRead(FlagExtensionData* data, const byte* input, int length, int msgType){
+    int offset = 0;
+    if (msgType == TLSX_IS_PQDELIVARY)
+        printf("its pqdelivary3\n");
+    if(length < 2) {
+        return -1;
+    }
+
+    data->flag = (input[offset] << 8) | input[offset + 1];
+    offset +=2;
+    printf("Flag extension read value: %d\n", data->flag);
+
+    return offset;
+}
+
+int SetFlagExtension(TLSX** extensions, TLSX_Type type, void* data, void* heap){
+    TLSX* extension = TLSX_New(type, data, heap);
+    if(!extension){
+        return -1;
+    }
+    extension->next = *extensions;
+    *extensions = extension;
+
+    return 0;
+}
 /******************************************************************************/
 /* Certificate Status Request v2                                              */
 /******************************************************************************/
@@ -10287,7 +10339,9 @@ void TLSX_FreeAll(TLSX* list, void* heap)
             case TLSX_SIGNATURE_ALGORITHMS_CERT:
                 break;
     #endif
-
+            case TLSX_IS_PQDELIVARY:   //Ebox-extension
+                FlagExtensionFree((FlagExtensionData*)extension->data, heap);
+                break;
             case TLSX_KEY_SHARE:
                 KS_FREE_ALL((KeyShareEntry*)extension->data, heap);
                 break;
@@ -10439,6 +10493,9 @@ static int TLSX_GetSize(TLSX* list, byte* semaphore, byte msgType,
                 length += SAC_GET_SIZE(extension->data);
                 break;
     #endif
+            case TLSX_IS_PQDELIVARY:
+                length += FlagExtensionGetsize((FlagExtensionData*)extension->data, msgType);
+                break;
 
             case TLSX_KEY_SHARE:
                 length += KS_GET_SIZE((KeyShareEntry*)extension->data, msgType);
@@ -10627,6 +10684,10 @@ static int TLSX_Write(TLSX* list, byte* output, byte* semaphore,
                 offset += SAC_WRITE(extension->data, output + offset);
                 break;
     #endif
+            case TLSX_IS_PQDELIVARY:  //Ebox-extension
+                printf("Flag extension to write\n");
+                offset += FlagExtensionWrite((FlagExtensionData*)extension->data, output+offset, msgType);
+                break;
 
             case TLSX_KEY_SHARE:
                 WOLFSSL_MSG("Key Share extension to write");
@@ -11314,7 +11375,23 @@ int TLSX_PopulateExtensions(WOLFSSL* ssl, byte isServer)
 #else
     ret = 0;
 #endif
+    if(TLSX_Find(ssl->extensions, TLSX_IS_PQDELIVARY) != NULL){
+    printf("TLSX_IS_PQDELIVARY extension found!\n");
+    }
+    printf("ssl->is_PQDelivary: %d\n",ssl->is_PQDelivary);  //Ebox-extension
+   if(ssl->is_PQDelivary == 1){
+        FlagExtensionData flagData = { .flag = 1 };
+        
+        if((ret = SetFlagExtension(&ssl->extensions, TLSX_IS_PQDELIVARY, &flagData, ssl->heap)) != 0){
+            fprintf(stderr, "Fail to set flag extension\n");
+            return ret;
+            }
+            printf("server set pqdelivary flag\n");
+        }
+
+
 #ifdef WOLFSSL_TLS13
+
         if (!isServer && IsAtLeastTLSv1_3(ssl->version)) {
             /* Add mandatory TLS v1.3 extension: supported version */
             WOLFSSL_MSG("Adding supported versions extension");
@@ -11876,6 +11953,12 @@ int TLSX_GetResponseSize(WOLFSSL* ssl, byte msgType, word16* pLength)
 #endif
 
 #ifdef WOLFSSL_TLS13
+        case IS_PQDELIVARY_server: //Ebox-extension
+            printf("TLSX_GetResponseSize\n");
+            XMEMSET(semaphore, 0xff, SEMAPHORE_SIZE);
+            TURN_OFF(semaphore, TLSX_ToSemaphore(TLSX_IS_PQDELIVARY));
+            break;
+
     #ifndef NO_CERTS
         case certificate:
             /* Don't send out any extension except those that are turned off. */
@@ -11973,6 +12056,7 @@ int TLSX_WriteResponse(WOLFSSL *ssl, byte* output, byte msgType, word16* pOffset
     #endif
 
     #ifdef WOLFSSL_TLS13
+
             case encrypted_extensions:
                 /* Send out all extension except those that are turned on. */
         #ifdef HAVE_ECC
@@ -12009,6 +12093,11 @@ int TLSX_WriteResponse(WOLFSSL *ssl, byte* output, byte msgType, word16* pOffset
         #endif
     #endif
 #endif
+
+        case IS_PQDELIVARY_server:  //Ebox-extension
+            XMEMSET(semaphore, 0xff, SEMAPHORE_SIZE);
+            TURN_OFF(semaphore, TLSX_ToSemaphore(TLSX_IS_PQDELIVARY));
+            break;
 
     #ifdef WOLFSSL_TLS13
         #ifndef NO_CERTS
@@ -12340,6 +12429,20 @@ int TLSX_Parse(WOLFSSL* ssl, byte* input, word16 length, byte msgType,
 #endif
                 ret = WOLF_STK_PARSE(ssl, input + offset, size, isRequest);
                 break;
+
+            case TLSX_IS_PQDELIVARY:  //Ebox-extension
+                FlagExtensionData flagData;
+                if (FlagExtensionRead(&flagData, input + offset, length - offset, msgType) < 0){
+                    return -1;
+                }
+
+                printf("data flag received: %d\n", flagData.flag);
+                if(flagData.flag){
+                    ssl->is_PQDelivary = 1;
+                    ssl->options.sendVerify = SEND_BLANK_CERT;
+
+                }
+                break;   
 
             case TLSX_QUANTUM_SAFE_HYBRID:
                 WOLFSSL_MSG("Quantum-Safe-Hybrid extension received");
