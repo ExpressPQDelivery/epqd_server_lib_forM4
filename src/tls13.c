@@ -5352,7 +5352,7 @@ static int SendTls13CertificateVerify(WOLFSSL* ssl)
         case TLS_ASYNC_BEGIN:
         {
             printf("ssl->is_PQDelivary111: %d\n", ssl->is_PQDelivary);
-            if (ssl->options.sendVerify == SEND_BLANK_CERT) {
+            if (ssl->options.sendVerify == SEND_BLANK_CERT && ssl->is_PQDelivary == 0) {
                 return 0;  /* sent blank cert, can't verify */
             }
             else  // ebox-extension
