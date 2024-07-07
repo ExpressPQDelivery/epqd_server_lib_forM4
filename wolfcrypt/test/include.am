@@ -20,9 +20,6 @@ wolfcrypt_test_testwolfcrypt_LDADD        = src/libwolfssl.la $(LIB_STATIC_ADD) 
 									wolfcrypt/postquantum/kyber/kyber512/libkyber512_clean.la \
 									wolfcrypt/postquantum/kyber/kyber768/libkyber768_clean.la \
 									wolfcrypt/postquantum/kyber/kyber1024/libkyber1024_clean.la \
-									wolfcrypt/postquantum/saber/lightsaber/liblightsaber_clean.la \
-									wolfcrypt/postquantum/saber/saber_/libsaber_clean.la \
-									wolfcrypt/postquantum/saber/firesaber/libfiresaber_clean.la \
 									wolfcrypt/postquantum/dilithium/dilithium2/libdilithium2_clean.la \
 									wolfcrypt/postquantum/dilithium/dilithium3/libdilithium3_clean.la \
 									wolfcrypt/postquantum/dilithium/dilithium5/libdilithium5_clean.la \
