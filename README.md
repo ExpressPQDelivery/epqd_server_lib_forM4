@@ -166,11 +166,9 @@ Set up a server to run on the local machine:
 
 ## Tested
 
-This project's build and usage has been tested successfully on the following platforms:
+This project's build and usage has been tested successfully on the following platform:
 
-- [x] Dell Inspiron 14 7000, running Ubuntu 20.04 with a 11th Gen Intel® Core™ i7-1165G7 @ 2.80GHz × 8 processor.
-
-- [x] Raspberry Pi 4 Model B, running Raspberry Pi OS with a 1.5 GHz 64-bit quad core ARM Cortex-A72 processor.
+- [x] AWS Ubuntu 22.04 instance with Intel Xeon E5 CPU (2.30GHz) and 1 GB RAM.
 
 ## Extra info
 
