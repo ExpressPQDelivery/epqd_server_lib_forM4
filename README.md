@@ -8,19 +8,6 @@ This is a tweeked version of WolfSSL that enables the use of Postquantum algorit
 
 - [x] CRYSTALS-Kyber
 
-- [x] Saber
-
-- [x] NTRU
-
-- [x] SIKE
-
-- [x] BIKE
-
-- [x] HQC
-
-- [x] NTRU Lprime
-
-- [x] FrodoKEM
 
 ### Digital Signature Algorithms
 
@@ -28,9 +15,6 @@ This is a tweeked version of WolfSSL that enables the use of Postquantum algorit
 
 - [x] Falcon
 
-- [x] SPHINCS+
-
-- [x] Picnic3
 
 ## System Requirements
 
@@ -165,28 +149,16 @@ To test the correct functionality of the project we can run some examples. These
 
 ### Example
 
-We can run a local TLS benchmark that creates two threads, one for the server and one for the client, and exchange messages using sockets. For sockets to work we must find our machine's local IP and give it as input to the benchmark. 
+We can run a local TLS benchmark for the server using sockets. For sockets to work we must find our machine's local IP and give it as input to the benchmark. 
 
-For example if our local IP is "192.168.1.14" and we want each test to run for 2 seconds, we can do the following:
+For example, if the server uses the port number "12400", we can do the following:
 
 Being on the top level directory run:
 ```
-./examples/benchmark/tls_bench -h "192.168.1.14" -t 2
+./examples/benchmark/tls_bench -s -P 12400
 ```
 
-### Example 2
 
-We can open two terminals and run a TLS server and a TLS client to connect to each other using the local network.
-
-One the first terminal run the server:
-```
-./examples/benchmark/tls_bench -s -t 2
-```
-
-and on the second one, the client:
-```
-./examples/benchmark/tls_bench -ch "192.168.1.14" -t 2
-```
 
 ### Troubleshooting
 
