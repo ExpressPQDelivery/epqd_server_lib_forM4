@@ -155,7 +155,7 @@ try re-running the benchmark OR try debugging it with an IDE, if `--enable-debug
 
 ## Usage
 
-This will run a local server on verbose mode (-sv), set the port number (-P 12400) and use only the pecified cipher suite (-l "TLS13-AES256-GCM-SHA384").
+This will run a local server on verbose mode (-sv), set the port number (-P 12400) and set the cipher suite (-l "TLS13-AES256-GCM-SHA384").
 
 Set up a server to run on the local machine:
 
