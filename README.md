@@ -141,18 +141,6 @@ To test the correct functionality of the project we can run some examples. These
 ./examples/benchmark/tls_bench -?
 ```
 
-### Example
-
-We can run a local TLS benchmark for the server using sockets. For sockets to work we must find our machine's local IP and give it as input to the benchmark. 
-
-For example, if the server uses the port number "12400", we can do the following:
-
-Being on the top level directory run:
-```
-./examples/benchmark/tls_bench -sv -P 12400
-```
-
-
 
 ### Troubleshooting
 
@@ -172,7 +160,7 @@ This will run a local server on verbose mode (-sv), set the port number 12400 an
 Set up a server to run on the local machine:
 
 ```
-./examples/benchmark/tls_bench -sv -P 12400 "TLS13-AES256-GCM-SHA384"
+./examples/benchmark/tls_bench -sv -P 12400 -l "TLS13-AES256-GCM-SHA384"
 ```
 
 
