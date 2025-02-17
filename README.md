@@ -1,7 +1,7 @@
 # WolfSSL 4.7.0 with Postquantum Algorithms for PC (Server)
 
 ## Description
-This is a tweeked version of WolfSSL that enables the use of Postquantum algorithms in TLS 1.3 key exchange and authentication methods, designed to run on PC's. The version we are using is [WolfSSL 4.7.0](https://github.com/wolfSSL/wolfssl/releases/tag/v4.7.0-stable) and the postquantum algorithms are from [PQClean](https://github.com/PQClean/PQClean). The postquantum algorithms that are supported are:
+This is a library that implements ExᴘʀᴇssPQDᴇʟɪᴠᴇʀʏ based on WolfSSL, designed to run on a server. The version we are using is [WolfSSL 4.7.0](https://github.com/wolfSSL/wolfssl/releases/tag/v4.7.0-stable) and the postquantum algorithms are from [PQClean](https://github.com/PQClean/PQClean). The postquantum algorithms that are supported are:
 
 
 ### Key Encapsualtion Mechanisms (KEMs)
