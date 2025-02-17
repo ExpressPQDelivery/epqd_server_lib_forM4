@@ -163,7 +163,7 @@ To test the correct functionality of the project we can run some examples. These
 ./examples/benchmark/tls_bench -?
 ```
 
-### Example 1
+### Example
 
 We can run a local TLS benchmark that creates two threads, one for the server and one for the client, and exchange messages using sockets. For sockets to work we must find our machine's local IP and give it as input to the benchmark. 
 
@@ -186,26 +186,6 @@ One the first terminal run the server:
 and on the second one, the client:
 ```
 ./examples/benchmark/tls_bench -ch "192.168.1.14" -t 2
-```
-
-### Expected results
-
-The results should be something like this:
-
-```
-Running TLS Benchmarks...
-TLS key exchange method: 		Kyber1024
-TLS authentication method: 		Dilithium3
-
-Side    Cipher                             Total Bytes  Num Conns      Rx ms      Tx ms    Rx MB/s    Tx MB/s   Connect Total ms   Connect Avg ms
-Server  TLS13-AES128-GCM-SHA256                5251072        642    142.348     72.300     17.590     34.632           1705.740            2.657
-Client  TLS13-AES128-GCM-SHA256                5251072        642    194.491     73.560     12.874     34.039           1682.280            2.620
-Side    Cipher                             Total Bytes  Num Conns      Rx ms      Tx ms    Rx MB/s    Tx MB/s   Connect Total ms   Connect Avg ms
-Server  TLS13-AES256-GCM-SHA384                5185536        634    155.804     78.679     15.870     31.427           1683.176            2.655
-Client  TLS13-AES256-GCM-SHA384                5185536        634    212.076     79.194     11.659     31.223           1660.017            2.618
-Side    Cipher                             Total Bytes  Num Conns      Rx ms      Tx ms    Rx MB/s    Tx MB/s   Connect Total ms   Connect Avg ms
-Server  TLS13-CHACHA20-POLY1305-SHA256         6012928        735     88.614     46.209     32.356     62.048           1790.655            2.436
-Client  TLS13-CHACHA20-POLY1305-SHA256         6012928        735    136.263     45.822     21.042     62.572           1765.171            2.402
 ```
 
 ### Troubleshooting
