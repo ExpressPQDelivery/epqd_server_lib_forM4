@@ -170,35 +170,6 @@ This project's build and usage has been tested successfully on the following pla
 
 - [x] AWS Ubuntu 22.04 instance with Intel Xeon E5 CPU (2.30GHz) and 1 GB RAM.
 
-## Extra info
-
-If you want to test the performance on **traditional** TLS 1.3 you only need to:
-
-1. Comment out the Post-quantum defines that we added in file `wolfssl/wolfSSL.I-CUBE-wolfSSL_conf.h`.
-
-2. Uncomment `#define HAVE_TRADITIONAL`.
-
-3. Compile and run. 
-
-The default algorithms that WolfSSL 4.7.0 uses are: 
-
-- ECDHE (Elliptic Curve Diffie-Hellman Ephemeral) with curve **SECP256R1** for key exchange.
-
-- RSA-2048 for digital signatures.
-
-To override them and use ECC in authentication you have to:
-
-1.  Uncomment `#define MY_HAVE_ECC`.
-
-2. Compile and run.
-
-Now the traditional algorithms that are used are:
-
-- ECDHE (Elliptic Curve Diffie-Hellman Ephemeral) with curve **SECP256R1** for key exchange.
-
-- ECDSA (Elliptic Curve DSA) with curve **SECP256R1** for authentication.
-
-
 
 ## License
 For all the licenses of the components of this project, see file ``Third-party-licenses.txt`.
