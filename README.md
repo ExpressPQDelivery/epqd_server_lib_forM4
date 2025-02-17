@@ -133,12 +133,6 @@ Additionally, one can pass harware optimization flags to the compiler to make us
 ./configure --enable-tls13 --disable-tlsv12 --disable-oldtls --disable-shared --disable-static --enable-intelasm --enable-aesni --enable-sp --enable-sp-asm
 ```
 
-### Windows
-
-Maybe you can import this project to EclipseCDT (or maybe another IDE) as a Makefile project or even as an Autotools project and do the Ubuntu installation steps 3-6 from the IDE. Unfortunately steps 1-2 must be done manually.
-
-(not tested)
-
 ## Test
 
 To test the correct functionality of the project we can run some examples. These examples use the "examples/benchmark/tls_bench" program that offers a lot of functionality. You can check it by running:
@@ -173,29 +167,14 @@ try re-running the benchmark OR try debugging it with an IDE, if `--enable-debug
 
 ## Usage
 
-To use this project to connect to a remote board (i.e a Nucleo Board) you should do:
+This will run a local server on verbose mode (-sv), set the port number 12400 and use only the pecified cipher suite (-l "TLS13-AES256-GCM-SHA384").
 
-1. Set up a server to run on the local machine:
-
-```
-./examples/benchmark/tls_bench -sv -t 10 -l "TLS13-AES256-GCM-SHA384"
-```
-
-This will run a local server on verbose mode (-sv), set the benchmark time to 10 seconds (-t 10) and use only the pecified cipher suite (-l "TLS13-AES256-GCM-SHA384").
-
-2. Get the internal IP if it's a local network or the external IP if it's connected to the Internet and use this [project](https://gitlab.com/g_tasop/pq-wolfssl-for-embedded) to setup and run the client from the board targeting that IP 
-
-OR
-
-1. Set up a server to run on the remote machine and get its IP. For example, the IP of the remote machine could be "192.168.1.14".
-
-4. Run the client with the IP as an argument:
+Set up a server to run on the local machine:
 
 ```
-./examples/benchmark/tls_bench -cv -t 10 -l "TLS13-AES256-GCM-SHA384" -h "192.168.2.55"
+./examples/benchmark/tls_bench -sv -P 12400 "TLS13-AES256-GCM-SHA384"
 ```
 
-This will run a TLS 1.3 client in verbose mode (-cv), set the benchmark time to 10 seconds (-t 10), use only the pecified cipher suite (-l "TLS13-AES256-GCM-SHA384") and connect to the host with the specified IP (-h "192.168.2.55")
 
 ## Tested
 
