@@ -3355,7 +3355,7 @@ void FlagExtensionFree(FlagExtensionData* data, void* heap){
 
 int FlagExtensionGetsize (FlagExtensionData* data, int msgType){ //Ebox-extension
     if (msgType == TLSX_IS_PQDELIVARY)
-        printf("its pqdelivary1\n");
+        //printf("its pqdelivary1\n");
     return sizeof(data->flag);
 }
 
@@ -3363,7 +3363,7 @@ int FlagExtensionGetsize (FlagExtensionData* data, int msgType){ //Ebox-extensio
 int FlagExtensionWrite(FlagExtensionData* data, byte* output, int msgType){
     int offset = 0;
         if (msgType == TLSX_IS_PQDELIVARY)
-        printf("its pqdelivary2\n");
+        //printf("its pqdelivary2\n");
     output[offset++] = (byte)data->flag;
 
     return offset;
@@ -3372,7 +3372,7 @@ int FlagExtensionWrite(FlagExtensionData* data, byte* output, int msgType){
 int FlagExtensionRead(FlagExtensionData* data, const byte* input, int length, int msgType){
     int offset = 0;
     if (msgType == TLSX_IS_PQDELIVARY)
-        printf("its pqdelivary3\n");
+        //printf("its pqdelivary3\n");
     if(length < 2) {
         return -1;
     }
