@@ -155,7 +155,7 @@ For example, if the server uses the port number "12400", we can do the following
 
 Being on the top level directory run:
 ```
-./examples/benchmark/tls_bench -s -P 12400
+./examples/benchmark/tls_bench -sv -P 12400
 ```
 
 
