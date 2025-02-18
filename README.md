@@ -133,26 +133,6 @@ Additionally, one can pass harware optimization flags to the compiler to make us
 ./configure --enable-tls13 --disable-tlsv12 --disable-oldtls --disable-shared --disable-static --enable-intelasm --enable-aesni --enable-sp --enable-sp-asm
 ```
 
-## Test
-
-To test the correct functionality of the project we can run some examples. These examples use the "examples/benchmark/tls_bench" program that offers a lot of functionality. You can check it by running:
-
-```
-./examples/benchmark/tls_bench -?
-```
-
-
-### Troubleshooting
-
-If the benchmark shows an error like this:
-
-```
-ERROR: failed to connect
-Client Error: -1 (unknown error number)
-```
-
-try re-running the benchmark OR try debugging it with an IDE, if `--enable-debug` flag is passed.
-
 ## Usage
 
 This will run a local server on verbose mode (-sv), set the port number (-P 12400) and set the cipher suite (-l "TLS13-AES256-GCM-SHA384").
